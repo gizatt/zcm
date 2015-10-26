@@ -11,7 +11,7 @@ function subscribe() {
     var sub = z.subscribe('EXAMPLE', 'example_t', handle);
     subscriptions.push({channel: 'EXAMPLE',
                         subscription: sub});
-    return true;
+    return false;
 }
 
 function unsubscribe() {
@@ -20,14 +20,14 @@ function unsubscribe() {
     var sub = subscriptions.pop();
     console.log('Unsubscribing from ' + sub.channel);
     z.unsubscribe(sub.subscription);
-    return true;
+    return false;
 }
 
 function subscribe_all() {
     console.log('Subscribing to .*');
     subscriptions.push({channel: ".*",
                         subscription: z.subscribe_all(handle)});
-    return true;
+    return false;
 }
 
 function publish() {
