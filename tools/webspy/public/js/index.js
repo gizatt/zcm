@@ -1,30 +1,58 @@
 var z;
 
-function handleExample(channel, msg) {
-    console.log('Got EXAMPLE: ', msg);
-    z.publish('FOOBAR', 'example_t', {
-        timestamp: 0,
-        position: [2, 4, 6],
-        orientation: [0, 2, 4, 6],
-        num_ranges: 2,
-        ranges: [7, 6],
-        name: 'foobar string',
-        enabled: false,
-    });
+var messages = [];
+var channelIdx = {};
+var viewIdx = null;
+
+function handle(channel, msg)
+{
+    var utime = Date.now() * 1000;
+    var freq = 0;
+
+    if (!(channel in channelIdx)) {
+        channelIdx[channel] = messages.length;
+        messages.push({});
+    } else {
+        var freq_now = 1000000 / (utime - messages[channelIdx[channel]].utime);
+        freq = messages[channelIdx[channel]].frequency * 0.1 + freq_now * 0.9;
+    }
+
+    messages[channelIdx[channel]] = {channel: channel,
+                                     type: msg.__type,
+                                     frequency: freq.toFixed(2),
+                                     utime: utime,
+                                     msg: msg};
+
+    var source   = $("#messages-template").html();
+    var template = Handlebars.compile(source);
+    var data = { messages: messages }
+    $("#message-table").html(template(data));
+
+    if (viewIdx != null && channelIdx[channel] == viewIdx) {
+        setupViewer(channel, messages[channelIdx[channel]].msg);
+    }
 }
 
-function subscribe() {
-    console.log('Subscribing to EXAMPLE');
-    z.subscribe('EXAMPLE', 'example_t', handleExample);
-    return false;
+function setupViewer(channel, msg) {
+    $("#message-viewer-channel").text(channel);
+    $("#message-viewer-content").html("");
+    delete msg["__type"];
+    delete msg["__hash"];
+    $("#message-viewer-content").jsonView(msg);
 }
 
-function unsubscribe() {
-    console.log('Unsubscribing from EXAMPLE');
-    z.unsubscribe('EXAMPLE');
-    return false;
+function showChannel(channel) {
+    if (channel in channelIdx) {
+        viewIdx = channelIdx[channel];
+        setupViewer(channel, messages[channelIdx[channel]].msg);
+    }
 }
 
-onload = function(){
-    //z = zcm.create()
+var subscriptions = [];
+
+onload = function() {
+    z = zcm.create()
+    subscriptions.push({channel: ".*",
+                        subscription: z.subscribe_all(handle)});
 }
+
