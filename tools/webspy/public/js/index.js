@@ -3,6 +3,7 @@ var z;
 var messages = [];
 var channelIdx = {};
 var viewIdx = null;
+var lastIdx = null;
 
 function handle(channel, msg)
 {
@@ -26,22 +27,25 @@ function handle(channel, msg)
     var source   = $("#messages-template").html();
     var template = Handlebars.compile(source);
     var data = { messages: messages }
-    $("#message-table").html(template(data));
+    var res = template(data);
+    $(res).css("background-color", "red");
+    $("#message-table").html(res);
 
     if (viewIdx != null && channelIdx[channel] == viewIdx) {
         setupViewer(channel, messages[channelIdx[channel]].msg);
     }
 }
 
-function setupViewer(channel, msg) {
+function setupViewer(channel, msg)
+{
     $("#message-viewer-channel").text(channel);
-    $("#message-viewer-content").html("");
     delete msg["__type"];
     delete msg["__hash"];
-    $("#message-viewer-content").jsonView(msg);
+    $("#message-viewer-content").jsonView(msg, {}, channel);
 }
 
-function showChannel(channel) {
+function showChannel(channel)
+{
     if (channel in channelIdx) {
         viewIdx = channelIdx[channel];
         setupViewer(channel, messages[channelIdx[channel]].msg);
@@ -50,9 +54,11 @@ function showChannel(channel) {
 
 var subscriptions = [];
 
-onload = function() {
+onload = function()
+{
     z = zcm.create()
     subscriptions.push({channel: ".*",
                         subscription: z.subscribe_all(handle)});
-}
 
+    setTimeout(recalculateHertz, 1000);
+}

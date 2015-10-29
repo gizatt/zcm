@@ -4,11 +4,13 @@
  * @link http://github.com/bazh/jquery.json-view
  * @license MIT
  */
+tmp = null;
 ;(function ($) {
     'use strict';
 
-    var collapser = function(collapsed) {
+    var collapser = function(name, collapsed) {
         var item = $('<span />', {
+            'id': name,
             'class': 'collapser',
             on: {
                 click: function() {
@@ -37,23 +39,18 @@
     };
 
     function collapserFinish() {
-        $(".collapser").each(function() {
+        $(".collapsed").each(function() {
             var $this = $(this);
 
             var block = $this.parent().children('.block');
             var ul = block.children('ul');
 
-            if ($this.hasClass('collapsed')) {
-                ul.hide();
-                block.children('.dots, .comments').show();
-            } else {
-                ul.show();
-                block.children('.dots, .comments').hide();
-            }
+            ul.hide();
+            block.children('.dots, .comments').show();
         })
     }
 
-    var formatter = function(json, opts) {
+    var formatter = function(json, opts, collapsed) {
         var options = $.extend({}, {
             nl2br: true
         }, opts);
@@ -112,7 +109,10 @@
                             .append(genBlock(data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
-                            item.prepend(collapser(options.collapsed));
+                            if (collapsed != null && collapsed[key])
+                                item.prepend(collapser(key, true));
+                            else
+                                item.prepend(collapser(key, options.collapsed));
                         }
 
                         if (cnt > 0) {
@@ -164,7 +164,10 @@
                             .append(genBlock(data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
-                            item.prepend(collapser(options.collapsed));
+                            if (collapsed != null && collapsed[key])
+                                item.prepend(collapser(key, true));
+                            else
+                                item.prepend(collapser(key, options.collapsed));
                         }
 
                         if (cnt > 0) {
@@ -228,8 +231,21 @@
         return genBlock(json);
     };
 
-    return $.fn.jsonView = function(json, options) {
+    var collapsed = {};
+    var lastKey = null;
+
+    return $.fn.jsonView = function(json, options, key) {
         var $this = $(this);
+
+        if (lastKey != null) {
+            collapsed[lastKey] = {};
+            $this.find(".collapser").each(function() {
+                collapsed[lastKey][$(this).attr("id")] = $(this).hasClass("collapsed");
+            })
+        }
+        lastKey = key;
+
+        $this.html("");
 
         options = $.extend({}, {
             nl2br: true
@@ -244,7 +260,7 @@
 
         $this.append($('<div />', {
             class: 'json-view'
-        }).append(formatter(json, options)));
+        }).append(formatter(json, options, collapsed[key])));
 
         collapserFinish();
 
