@@ -4,13 +4,12 @@
  * @link http://github.com/bazh/jquery.json-view
  * @license MIT
  */
-tmp = null;
 ;(function ($) {
     'use strict';
 
     var collapser = function(name, collapsed) {
         var item = $('<span />', {
-            'id': name,
+            'data-field': name,
             'class': 'collapser',
             on: {
                 click: function() {
@@ -70,7 +69,7 @@ tmp = null;
             });
         };
 
-        var genBlock = function(val, level) {
+        var genBlock = function(prefix, val, level) {
             switch($.type(val)) {
                 case 'object':
                     if (!level) {
@@ -106,7 +105,7 @@ tmp = null;
                             .append(key)
                             .append(span('"', 'q'))
                             .append(': ')
-                            .append(genBlock(data, level + 1));
+                            .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
                             if (collapsed != null && collapsed[key])
@@ -161,7 +160,7 @@ tmp = null;
                     $.each(val, function(key, data) {
                         cnt--;
                         var item = $('<li />')
-                            .append(genBlock(data, level + 1));
+                            .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
                             if (collapsed != null && collapsed[key])
@@ -206,8 +205,10 @@ tmp = null;
                         }
                     }
 
-                    var text = $('<span />', { 'class': 'str' })
-                        .html(val);
+                    var text = $('<span />', {
+                                    'id': prefix,
+                                    'class': 'str'
+                                }).html(val);
 
                     return $('<span />')
                         .append(span('"', 'q'))
@@ -215,7 +216,10 @@ tmp = null;
                         .append(span('"', 'q'));
 
                 case 'number':
-                    return span(val.toString(), 'num');
+                    return $('<span />', {
+                                'id': prefix,
+                                'class': 'num'
+                            }).html(val.toString());
 
                 case 'undefined':
                     return span('undefined', 'undef');
@@ -228,7 +232,7 @@ tmp = null;
             }
         };
 
-        return genBlock(json);
+        return genBlock("", json, 0);
     };
 
     var collapsed = {};
@@ -240,7 +244,7 @@ tmp = null;
         if (lastKey != null) {
             collapsed[lastKey] = {};
             $this.find(".collapser").each(function() {
-                collapsed[lastKey][$(this).attr("id")] = $(this).hasClass("collapsed");
+                collapsed[lastKey][$(this).data("field")] = $(this).hasClass("collapsed");
             })
         }
         lastKey = key;

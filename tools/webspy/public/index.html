@@ -48,9 +48,9 @@
     <script id="messages-template" type="text/x-handlebars-template">
       {{#messages}}
         <tr id="{{channel}}" onclick="showChannel('{{channel}}');">
-          <td class="col-md-2">{{channel}}</td>
-          <td class="col-md-2">{{type}}</td>
-          <td class="col-md-2">{{frequency}}</td>
+          <td class="col-md-2 channel">{{channel}}</td>
+          <td class="col-md-2 type">{{type}}</td>
+          <td class="col-md-2 frequency">{{frequency}}</td>
         </tr>
       {{/messages}}
     </script>

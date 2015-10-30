@@ -7,7 +7,7 @@ var lastIdx = null;
 
 function handle(channel, msg)
 {
-    var utime = Date.now() * 1000;
+    var utime = now() * 1000;
 
     if (!(channel in channelIdx)) {
         channelIdx[channel] = messages.length;
@@ -29,6 +29,7 @@ function handle(channel, msg)
                                      lastUtime: lastUtime,
                                      msg: msg};
 
+
     var source   = $("#messages-template").html();
     var template = Handlebars.compile(source);
     var data = { messages: messages }
@@ -37,7 +38,7 @@ function handle(channel, msg)
     $("#message-table").html(res);
 
     if (viewIdx != null && channelIdx[channel] == viewIdx) {
-        setupViewer(channel, messages[channelIdx[channel]].msg);
+        updateViewer(channel, messages[channelIdx[channel]].msg);
     }
 }
 
@@ -46,7 +47,39 @@ function setupViewer(channel, msg)
     $("#message-viewer-channel").text(channel);
     delete msg["__type"];
     delete msg["__hash"];
-    $("#message-viewer-content").jsonView(msg, {}, channel);
+    $("#message-viewer-content").jsonView(msg, {collapsed: true}, channel);
+}
+
+function updateViewer(channel, msg)
+{
+    delete msg["__type"];
+    delete msg["__hash"];
+    for (var field in msg) {
+        updateField(field, msg[field]);
+    }
+}
+
+function updateField(prefix, field)
+{
+    var type = $.type(field);
+    switch(type) {
+
+        case 'object':
+            for (var f in field) {
+                updateField(prefix + f, field[f]);
+            }
+            break;
+
+        case 'array':
+            for (var i = 0; i < field.length; ++i) {
+                updateField(prefix + i, field[i]);
+            }
+            break;
+
+        default:
+            $("#message-viewer-content #" + prefix).text(field);
+            break;
+    }
 }
 
 function showChannel(channel)
@@ -64,7 +97,7 @@ function calcHertzLoop()
             if (messages[m]["utime"] != messages[m]["lastUtime"]) {
 
                 var dt = messages[m]["utime"] - messages[m]["lastUtime"];
-                var dtPredict = Date.now() * 1000 - messages[m]["utime"];
+                var dtPredict = now() * 1000 - messages[m]["utime"];
 
                 var freq;
                 if (dtPredict > dt * 3) {
@@ -83,7 +116,6 @@ function calcHertzLoop()
                 var res = template(data);
                 $(res).css("background-color", "red");
                 $("#message-table").html(res);
-
             }
         }
         calcHertzLoop();
@@ -100,3 +132,24 @@ onload = function()
 
     calcHertzLoop();
 }
+
+now = function()
+{
+    // Returns the number of milliseconds elapsed since either the browser navigationStart event or
+    // the UNIX epoch, depending on availability.
+    // Where the browser supports 'performance' we use that as it is more accurate (microsoeconds
+    // will be returned in the fractional part) and more reliable as it does not rely on the system time.
+    // Where 'performance' is not available, we will fall back to Date().getTime().
+    var performance = window.performance || {};
+
+    performance.now = (function() {
+        return performance.now    ||
+        performance.webkitNow     ||
+        performance.msNow         ||
+        performance.oNow          ||
+        performance.mozNow        ||
+        function() { return new Date().getTime(); };
+        })();
+
+    return performance.now();
+};
