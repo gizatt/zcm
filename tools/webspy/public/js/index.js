@@ -17,10 +17,6 @@ function handle(channel, msg)
         newChannel = true;
     }
 
-    var freq = 0;
-    if ("frequency" in messages[channelIdx[channel]])
-        freq = messages[channelIdx[channel]]["frequency"];
-
     var lastUtime = utime;
     if ("utime" in messages[channelIdx[channel]])
         lastUtime = messages[channelIdx[channel]]["utime"];
@@ -30,7 +26,6 @@ function handle(channel, msg)
     messages[channelIdx[channel]]["type"]       = msg.__type,
     messages[channelIdx[channel]]["utime"]      = utime;
     messages[channelIdx[channel]]["lastUtime"]  = lastUtime;
-    messages[channelIdx[channel]]["frequency"]  = freq;
     messages[channelIdx[channel]]["msg"]        = msg;
 
     if (newChannel)
@@ -122,10 +117,13 @@ function calcHertzLoop()
                     freq = 1000000 / dt;
                 }
 
-                messages[m]["frequency"] = freq.toFixed(2);
+                messages[m]["frequency"] = freq;
                 var id = "#channel-" + channelIdx[messages[m]["channel"]] + "-hz";
-                $(id).text(messages[m]["frequency"])
+            } else {
+                messages[m]["frequency"] = 0;
             }
+
+            $(id).text(messages[m]["frequency"].toFixed(2));
         }
         calcHertzLoop();
     }, 500);

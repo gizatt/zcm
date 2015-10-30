@@ -4,16 +4,24 @@
   <head>
     <title>ZCM Web Spy</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/bootstrap-theme.css">
     <link rel="stylesheet" href="css/jquery.json-view.min.css">
 
     <script src="js/zcm-client.js"></script>
     <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
     <script src="js/bootstrap.js"></script>
     <script src="js/handlebars-1.0.rc.1.min.js"></script>
     <script src="js/jquery.json-view.js"></script>
 
+    <script>
+    $(function() {
+      $( "#message-viewer" ).resizable();
+      $( "#message-viewer" ).draggable();
+    });
+    </script>
   </head>
 
   <body>
@@ -24,7 +32,8 @@
           <div class="panel panel-default" style="height: 100%;">
             <div class="panel-body">
               <div class="table-responsive">
-                <table class="table table-hover table-striped list-table-fixed noselect">
+                <table class="table table-hover table-striped
+                              list-table-fixed noselect">
                   <thead>
                     <tr>
                       <th class="col-md-5">Channel Name</th>
@@ -41,10 +50,11 @@
           </div>
         </div>
         <div class="col-xs-6">
-          <div class="panel panel-default" style="height: 100%;">
+          <div id="message-viewer"
+               class="panel panel-default ui-widget-content"
+               style="height: 100%;">
             <div id="message-viewer-channel" class="panel-heading"></div>
-            <div id="message-viewer-content" class="panel-body">
-            </div>
+            <div id="message-viewer-content" class="panel-body"></div>
           </div>
         </div>
       </div>
