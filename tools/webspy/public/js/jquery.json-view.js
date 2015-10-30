@@ -49,7 +49,7 @@
         })
     }
 
-    var formatter = function(json, opts, collapsed) {
+    var formatter = function(json, opts, collapsed, prefix) {
         var options = $.extend({}, {
             nl2br: true
         }, opts);
@@ -108,8 +108,8 @@
                             .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
-                            if (collapsed != null && collapsed[key])
-                                item.prepend(collapser(key, true));
+                            if (collapsed != null)
+                                item.prepend(collapser(key, collapsed[key]));
                             else
                                 item.prepend(collapser(key, options.collapsed));
                         }
@@ -163,8 +163,8 @@
                             .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
-                            if (collapsed != null && collapsed[key])
-                                item.prepend(collapser(key, true));
+                            if (collapsed != null)
+                                item.prepend(collapser(key, collapsed[key]));
                             else
                                 item.prepend(collapser(key, options.collapsed));
                         }
@@ -222,17 +222,26 @@
                             }).html(val.toString());
 
                 case 'undefined':
-                    return span('undefined', 'undef');
+                    return $('<span />', {
+                                'id': prefix,
+                                'class': 'undef'
+                            }).html('undefined');
 
                 case 'null':
-                    return span('null', 'null');
+                    return $('<span />', {
+                                'id': prefix,
+                                'class': 'null'
+                            }).html('null');
 
                 case 'boolean':
-                    return span(val ? 'true' : 'false', 'bool');
+                    return $('<span />', {
+                                'id': prefix,
+                                'class': 'bool'
+                            }).html(val ? 'true' : 'false');
             }
         };
 
-        return genBlock("", json, 0);
+        return genBlock(prefix, json, 0);
     };
 
     var collapsed = {};
@@ -264,7 +273,7 @@
 
         $this.append($('<div />', {
             class: 'json-view'
-        }).append(formatter(json, options, collapsed[key])));
+        }).append(formatter(json, options, collapsed[key], key)));
 
         collapserFinish();
 

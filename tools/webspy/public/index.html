@@ -17,29 +17,34 @@
   </head>
 
   <body>
-    <div class="row">
-      <div class="col-xs-6">
-        <div class="panel panel-default" style="height: 100%;">
-          <div class="panel-body">
-            <div class="table-responsive">
-              <table class="table table-hover table-striped list-table-fixed noselect">
-                <thead>
-                  <tr>
-                    <th class="col-md-2">Channel Name</th>
-                    <th class="col-md-2">Type</th>
-                    <th class="col-md-2">Hz</th>
-                  </tr>
-                </thead>
-                <tbody id="message-table"></tbody>
-              </table>
+    <h1 style="text-align:center; margin:5rem;">ZCM Web-Spy</h1>
+    <div class="container col-md-12">
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="panel panel-default" style="height: 100%;">
+            <div class="panel-body">
+              <div class="table-responsive">
+                <table class="table table-hover table-striped list-table-fixed noselect">
+                  <thead>
+                    <tr>
+                      <th class="col-md-5">Channel Name</th>
+                      <th class="col-md-5">Type</th>
+                      <th class="col-md-2" style="text-align: right;">Hz</td>
+                    </tr>
+                  </thead>
+                  <tbody id="message-table"></tbody>
+                </table>
+                <button id="clear" class="col-md-12" style="visibility: hidden;"
+                        onclick="clearHistory();">Clear</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-xs-6">
-        <div class="panel panel-default" style="height: 100%;">
-          <div id="message-viewer-channel" class="panel-heading"></div>
-          <div id="message-viewer-content" class="panel-body">
+        <div class="col-xs-6">
+          <div class="panel panel-default" style="height: 100%;">
+            <div id="message-viewer-channel" class="panel-heading"></div>
+            <div id="message-viewer-content" class="panel-body">
+            </div>
           </div>
         </div>
       </div>
@@ -48,9 +53,11 @@
     <script id="messages-template" type="text/x-handlebars-template">
       {{#messages}}
         <tr id="{{channel}}" onclick="showChannel('{{channel}}');">
-          <td class="col-md-2 channel">{{channel}}</td>
-          <td class="col-md-2 type">{{type}}</td>
-          <td class="col-md-2 frequency">{{frequency}}</td>
+          <td class="col-md-5 channel">{{channel}}</td>
+          <td class="col-md-5 type">{{type}}</td>
+          <td id="channel-{{channelIdx}}-hz"
+              class="col-md-2 frequency"
+              style="text-align: right;">{{frequency}}</td>
         </tr>
       {{/messages}}
     </script>

@@ -9,37 +9,50 @@ function handle(channel, msg)
 {
     var utime = now() * 1000;
 
+    var newChannel = false;
+
     if (!(channel in channelIdx)) {
         channelIdx[channel] = messages.length;
         messages.push({});
+        newChannel = true;
     }
 
     var freq = 0;
     if ("frequency" in messages[channelIdx[channel]])
-        freq = Number(messages[channelIdx[channel]].frequency);
+        freq = messages[channelIdx[channel]]["frequency"];
 
     var lastUtime = utime;
     if ("utime" in messages[channelIdx[channel]])
-        lastUtime = messages[channelIdx[channel]].utime;
+        lastUtime = messages[channelIdx[channel]]["utime"];
 
-    messages[channelIdx[channel]] = {channel: channel,
-                                     type: msg.__type,
-                                     frequency: freq.toFixed(2),
-                                     utime: utime,
-                                     lastUtime: lastUtime,
-                                     msg: msg};
+    messages[channelIdx[channel]]["channelIdx"] = channelIdx[channel];
+    messages[channelIdx[channel]]["channel"]    = channel;
+    messages[channelIdx[channel]]["type"]       = msg.__type,
+    messages[channelIdx[channel]]["utime"]      = utime;
+    messages[channelIdx[channel]]["lastUtime"]  = lastUtime;
+    messages[channelIdx[channel]]["frequency"]  = freq;
+    messages[channelIdx[channel]]["msg"]        = msg;
 
+    if (newChannel)
+        setupChannelList();
 
+    if (viewIdx != null && channelIdx[channel] == viewIdx) {
+        updateViewer(channel, messages[channelIdx[channel]].msg);
+    }
+}
+
+function setupChannelList()
+{
     var source   = $("#messages-template").html();
     var template = Handlebars.compile(source);
     var data = { messages: messages }
     var res = template(data);
     $(res).css("background-color", "red");
     $("#message-table").html(res);
-
-    if (viewIdx != null && channelIdx[channel] == viewIdx) {
-        updateViewer(channel, messages[channelIdx[channel]].msg);
-    }
+    if (messages.length > 0)
+        $("#clear").css("visibility", "visible");
+    else
+        $("#clear").css("visibility", "hidden");
 }
 
 function setupViewer(channel, msg)
@@ -47,7 +60,8 @@ function setupViewer(channel, msg)
     $("#message-viewer-channel").text(channel);
     delete msg["__type"];
     delete msg["__hash"];
-    $("#message-viewer-content").jsonView(msg, {collapsed: true}, channel);
+    $("#message-viewer-content").jsonView(msg, {collapsed: true},
+                                          channel.replace(" ", "_"));
 }
 
 function updateViewer(channel, msg)
@@ -55,7 +69,7 @@ function updateViewer(channel, msg)
     delete msg["__type"];
     delete msg["__hash"];
     for (var field in msg) {
-        updateField(field, msg[field]);
+        updateField(channel.replace(" ", "_") + field, msg[field]);
     }
 }
 
@@ -109,17 +123,27 @@ function calcHertzLoop()
                 }
 
                 messages[m]["frequency"] = freq.toFixed(2);
-
-                var source   = $("#messages-template").html();
-                var template = Handlebars.compile(source);
-                var data = { messages: messages }
-                var res = template(data);
-                $(res).css("background-color", "red");
-                $("#message-table").html(res);
+                var id = "#channel-" + channelIdx[messages[m]["channel"]] + "-hz";
+                $(id).text(messages[m]["frequency"])
             }
         }
         calcHertzLoop();
     }, 500);
+}
+
+function clearHistory()
+{
+    messages = [];
+    channelIdx = {};
+    var source   = $("#messages-template").html();
+    var template = Handlebars.compile(source);
+    var data = { messages: messages }
+    var res = template(data);
+    $(res).css("background-color", "red");
+    $("#message-table").html(res);
+    $("#clear").css("visibility", "hidden");
+    $("#message-viewer-channel").html("");
+    $("#message-viewer-content").html("");
 }
 
 var subscriptions = [];
