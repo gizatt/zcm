@@ -144,6 +144,14 @@ function clearHistory()
     $("#message-viewer-content").html("");
 }
 
+function pinViewer(enabled)
+{
+    $("#message-viewer").resizable({disabled:enabled});
+    $("#message-viewer").draggable({disabled:enabled});
+    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
+    $(".ui-resizable-se").removeClass("ui-icon");
+}
+
 var subscriptions = [];
 
 onload = function()
@@ -151,6 +159,29 @@ onload = function()
     z = zcm.create()
     subscriptions.push({channel: ".*",
                         subscription: z.subscribe_all(handle)});
+
+    $("#message-viewer").resizable({
+        resize: function(event, ui){
+            var currentHeight = ui.size.height;
+
+
+            var padding = $(".panel-heading").height() +
+                          parseInt($(".panel-heading").css("padding-top"), 10) +
+                          parseInt($(".panel-heading").css("padding-bottom"), 10) +
+                          parseInt($("#message-viewer-content").css("padding-bottom"), 10) +
+                          parseInt($(this).css("margin-bottom"), 10) - 4;
+
+            // this accounts for some lag in the ui.size value, if you take this away
+            // you'll get some instable behaviour
+            $(this).height(currentHeight);
+
+            // set the content panel width
+            $("#message-viewer-content").height(currentHeight - padding);
+        }
+    });
+    $("#message-viewer").draggable();
+    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
+    $(".ui-resizable-se").removeClass("ui-icon");
 
     calcHertzLoop();
 }

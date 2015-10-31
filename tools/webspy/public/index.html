@@ -15,13 +15,6 @@
     <script src="js/bootstrap.js"></script>
     <script src="js/handlebars-1.0.rc.1.min.js"></script>
     <script src="js/jquery.json-view.js"></script>
-
-    <script>
-    $(function() {
-      $( "#message-viewer" ).resizable();
-      $( "#message-viewer" ).draggable();
-    });
-    </script>
   </head>
 
   <body>
@@ -53,8 +46,19 @@
           <div id="message-viewer"
                class="panel panel-default ui-widget-content"
                style="height: 100%;">
-            <div id="message-viewer-channel" class="panel-heading"></div>
-            <div id="message-viewer-content" class="panel-body"></div>
+            <div class="panel-heading">
+              <div class="clearfix">
+                <div id="message-viewer-channel" class="col-xs-11"></div>
+                <div class="clearfix col-xs-1">
+                  <div class="btn btn-xs glyphicon glyphicon-pushpin
+                              pull-right"
+                       onclick="$(this).toggleClass('active');
+                                pinViewer($(this).hasClass('active'));"></div>
+                </div>
+              </div>
+            </div>
+            <div id="message-viewer-content" class="panel-body"
+                 style="height:100%; width:100%; overflow: auto;"></div>
           </div>
         </div>
       </div>
