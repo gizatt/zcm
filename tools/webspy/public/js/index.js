@@ -2,8 +2,9 @@ var z;
 
 var messages = [];
 var channelIdx = {};
-var viewIdx = null;
-var lastIdx = null;
+
+var viewers = [];
+var viewerChannelIdx = {};
 
 function handle(channel, msg)
 {
@@ -17,6 +18,10 @@ function handle(channel, msg)
         newChannel = true;
     }
 
+    var freq = 0;
+    if ("frequency" in messages[channelIdx[channel]])
+        freq = messages[channelIdx[channel]]["frequency"];
+
     var lastUtime = utime;
     if ("utime" in messages[channelIdx[channel]])
         lastUtime = messages[channelIdx[channel]]["utime"];
@@ -26,12 +31,13 @@ function handle(channel, msg)
     messages[channelIdx[channel]]["type"]       = msg.__type,
     messages[channelIdx[channel]]["utime"]      = utime;
     messages[channelIdx[channel]]["lastUtime"]  = lastUtime;
+    messages[channelIdx[channel]]["frequency"]  = freq;
     messages[channelIdx[channel]]["msg"]        = msg;
 
     if (newChannel)
         setupChannelList();
 
-    if (viewIdx != null && channelIdx[channel] == viewIdx) {
+    if (channel in viewerChannelIdx) {
         updateViewer(channel, messages[channelIdx[channel]].msg);
     }
 }
@@ -52,51 +58,102 @@ function setupChannelList()
 
 function setupViewer(channel, msg)
 {
-    $("#message-viewer-channel").text(channel);
+    var channelSanitized = channel.replace(" ", "_");
+
+    if (channel in viewerChannelIdx) {
+        return;
+    }
+
+    viewerChannelIdx[channel] = viewers.length;
+    viewers.push({});
+    viewers[viewerChannelIdx[channel]]["channel"] = channelSanitized;
+
+    var source   = $("#viewer-template").html();
+    var template = Handlebars.compile(source);
+    var data = { channel: channelSanitized }
+    var res = template(data);
+    $("#viewers").append(res);
+
+
+    $("#viewer-" + channelSanitized + " .viewer-channel").text(channel);
     delete msg["__type"];
     delete msg["__hash"];
-    $("#message-viewer-content").jsonView(msg, {collapsed: true},
-                                          channel.replace(" ", "_"));
+    $("#viewer-" + channelSanitized + " .viewer-content").jsonView(msg, {collapsed: true},
+                                                                   channelSanitized);
+
+    $("#viewer-" + channelSanitized).resizable({
+        resize: function(event, ui){
+            var currentHeight = ui.size.height;
+
+
+            var padding = $("#viewer-" + channelSanitized +
+                            " .panel-heading").height() +
+                          parseInt($("#viewer-" + channelSanitized +
+                                     " .panel-heading").css("padding-top"), 10) +
+                          parseInt($("#viewer-" + channelSanitized +
+                                     " .panel-heading").css("padding-bottom"), 10) +
+                          parseInt($("#viewer-" + channelSanitized +
+                                     " .viewer-content").css("padding-bottom"), 10) +
+                          parseInt($(this).css("margin-bottom"), 10) - 4;
+
+            // this accounts for some lag in the ui.size value, if you take this away
+            // you'll get some instable behaviour
+            $(this).height(currentHeight);
+
+            // set the content panel width
+            $("#viewer-" + channelSanitized +
+              " .viewer-content").height(currentHeight - padding);
+        }
+    });
+
+    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
+    $(".ui-resizable-se").removeClass("ui-icon");
+
+    pinViewer(channelSanitized, false);
 }
 
 function updateViewer(channel, msg)
 {
+    var c = channel.replace(" ", "_");
     delete msg["__type"];
     delete msg["__hash"];
+
     for (var field in msg) {
-        updateField(channel.replace(" ", "_") + field, msg[field]);
+        updateField(c, c + field, msg[field]);
+    }
+
+    if ($("#viewer-" + c + " .viewer-content").css("visibility") == "hidden") {
+        $(".viewer-content").css("visibility", "visible");
     }
 }
 
-function updateField(prefix, field)
+function updateField(channel, prefix, field)
 {
     var type = $.type(field);
     switch(type) {
 
         case 'object':
             for (var f in field) {
-                updateField(prefix + f, field[f]);
+                updateField(channel, prefix + f, field[f]);
             }
             break;
 
         case 'array':
             for (var i = 0; i < field.length; ++i) {
-                updateField(prefix + i, field[i]);
+                updateField(channel, prefix + i, field[i]);
             }
             break;
 
         default:
-            $("#message-viewer-content #" + prefix).text(field);
+            $("#viewer-" + channel + " .viewer-content #" + prefix).text(field);
             break;
     }
 }
 
 function showChannel(channel)
 {
-    if (channel in channelIdx) {
-        viewIdx = channelIdx[channel];
+    if (channel in channelIdx)
         setupViewer(channel, messages[channelIdx[channel]].msg);
-    }
 }
 
 function calcHertzLoop()
@@ -140,14 +197,14 @@ function clearHistory()
     $(res).css("background-color", "red");
     $("#message-table").html(res);
     $("#clear").css("visibility", "hidden");
-    $("#message-viewer-channel").html("");
-    $("#message-viewer-content").html("");
+    $(".viewer-content").css("visibility", "hidden");
 }
 
-function pinViewer(enabled)
+function pinViewer(channel, enabled)
 {
-    $("#message-viewer").resizable({disabled:enabled});
-    $("#message-viewer").draggable({disabled:enabled});
+    $("#viewer-" + channel).resizable({disabled:enabled});
+    $("#viewer-" + channel).draggable({disabled:enabled});
+    $("#viewer-" + channel).css("cursor", enabled ? "" : "move");
     $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
     $(".ui-resizable-se").removeClass("ui-icon");
 }
@@ -159,29 +216,6 @@ onload = function()
     z = zcm.create()
     subscriptions.push({channel: ".*",
                         subscription: z.subscribe_all(handle)});
-
-    $("#message-viewer").resizable({
-        resize: function(event, ui){
-            var currentHeight = ui.size.height;
-
-
-            var padding = $(".panel-heading").height() +
-                          parseInt($(".panel-heading").css("padding-top"), 10) +
-                          parseInt($(".panel-heading").css("padding-bottom"), 10) +
-                          parseInt($("#message-viewer-content").css("padding-bottom"), 10) +
-                          parseInt($(this).css("margin-bottom"), 10) - 4;
-
-            // this accounts for some lag in the ui.size value, if you take this away
-            // you'll get some instable behaviour
-            $(this).height(currentHeight);
-
-            // set the content panel width
-            $("#message-viewer-content").height(currentHeight - padding);
-        }
-    });
-    $("#message-viewer").draggable();
-    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
-    $(".ui-resizable-se").removeClass("ui-icon");
 
     calcHertzLoop();
 }

@@ -15,54 +15,55 @@
     <script src="js/bootstrap.js"></script>
     <script src="js/handlebars-1.0.rc.1.min.js"></script>
     <script src="js/jquery.json-view.js"></script>
+    <script src="js/jquery.ui.touch-punch.min.js"></script>
   </head>
 
   <body>
     <h1 style="text-align:center; margin:5rem;">ZCM Web-Spy</h1>
-    <div class="container col-md-12">
-      <div class="row">
-        <div class="col-xs-6">
-          <div class="panel panel-default" style="height: 100%;">
-            <div class="panel-body">
-              <div class="table-responsive">
-                <table class="table table-hover table-striped
-                              list-table-fixed noselect">
-                  <thead>
-                    <tr>
-                      <th class="col-md-5">Channel Name</th>
-                      <th class="col-md-5">Type</th>
-                      <th class="col-md-2" style="text-align: right;">Hz</td>
-                    </tr>
-                  </thead>
-                  <tbody id="message-table"></tbody>
-                </table>
-                <button id="clear" class="col-md-12" style="visibility: hidden;"
-                        onclick="clearHistory();">Clear</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-6">
-          <div id="message-viewer"
-               class="panel panel-default ui-widget-content"
-               style="height: 100%;">
-            <div class="panel-heading">
-              <div class="clearfix">
-                <div id="message-viewer-channel" class="col-xs-11"></div>
-                <div class="clearfix col-xs-1">
-                  <div class="btn btn-xs glyphicon glyphicon-pushpin
-                              pull-right"
-                       onclick="$(this).toggleClass('active');
-                                pinViewer($(this).hasClass('active'));"></div>
-                </div>
-              </div>
-            </div>
-            <div id="message-viewer-content" class="panel-body"
-                 style="height:100%; width:100%; overflow: auto;"></div>
+    <div class="col-xs-6 col-xs-offset-3">
+      <div class="panel panel-default" style="height: 100%;">
+        <div class="panel-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped
+                          list-table-fixed noselect">
+              <thead>
+                <tr>
+                  <th class="col-md-5">Channel Name</th>
+                  <th class="col-md-5">Type</th>
+                  <th class="col-md-2" style="text-align: right;">Hz</td>
+                </tr>
+              </thead>
+              <tbody id="message-table"></tbody>
+            </table>
+            <button id="clear" class="col-md-12" style="visibility: hidden;"
+                    onclick="clearHistory();">Clear</button>
           </div>
         </div>
       </div>
     </div>
+    <p><div id="viewers" class="col-xs-12"></div></p>
+
+    <script id="viewer-template" type="text/x-handlebars-template">
+      <div class="col-xs-1">
+        <div id="viewer-{{channel}}"
+             class="viewer panel panel-default ui-widget-content"
+             style="position: fixed;">
+          <div class="panel-heading">
+            <div class="clearfix">
+              <div class="viewer-channel col-xs-10"></div>
+              <div class="clearfix col-xs-1">
+                <div class="btn btn-xs glyphicon glyphicon-pushpin pull-right"
+                     style="z-index: 99;"
+                     onclick="$(this).toggleClass('active');
+                              pinViewer('{{channel}}', $(this).hasClass('active'));"></div>
+              </div>
+            </div>
+          </div>
+          <div class="viewer-content panel-body"
+               style="height:100%; width:100%; overflow: auto;"></div>
+        </div>
+      </div>
+    </script>
 
     <script id="messages-template" type="text/x-handlebars-template">
       {{#messages}}

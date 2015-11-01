@@ -108,10 +108,14 @@
                             .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
-                            if (collapsed != null)
-                                item.prepend(collapser(key, collapsed[key]));
-                            else
+                            if (collapsed != null) {
+                                if (key in collapsed)
+                                    item.prepend(collapser(key, collapsed[key]));
+                                else
+                                    item.prepend(collapser(key, options.collapsed));
+                            } else {
                                 item.prepend(collapser(key, options.collapsed));
+                            }
                         }
 
                         if (cnt > 0) {
@@ -163,10 +167,14 @@
                             .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
-                            if (collapsed != null)
-                                item.prepend(collapser(key, collapsed[key]));
-                            else
+                            if (collapsed != null) {
+                                if (key in collapsed)
+                                    item.prepend(collapser(key, collapsed[key]));
+                                else
+                                    item.prepend(collapser(key, options.collapsed));
+                            } else {
                                 item.prepend(collapser(key, options.collapsed));
+                            }
                         }
 
                         if (cnt > 0) {
