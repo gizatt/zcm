@@ -15,6 +15,12 @@ function showChannel(channel, msg)
 
         $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
         $(".ui-resizable-se").removeClass("ui-icon");
+    } else {
+        if (viewers[viewerChannelIdx[channel]].isClosed()) {
+            var mv = new messageViewer(channel);
+            $('#viewers').append(mv.createPanel(msg));
+            viewers[viewerChannelIdx[channel]] = mv
+        }
     }
 }
 

@@ -60,7 +60,7 @@ function messageViewer(channel)
 
     this.createPanel = function(msg)
     {
-        var wrapper = $('<div />', {'class' : 'col-xs-1'});
+        var wrapper = $('<div />', {'class' : 'panel-' + this.c + ' col-xs-1'});
 
         var panel = $('<div />', { 'id' : 'message-viewer-' + this.c,
                                    'class' : 'message-viewer panel panel-default ' +
@@ -73,6 +73,12 @@ function messageViewer(channel)
         panelHeading.append($('<div />', { 'class' : 'message-viewer-channel col-xs-10' })
                             .text(this.channel));
 
+        var close = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
+                                            'glyphicon-remove pull-right',
+                                  'stlye' : 'z-index:99;' });
+        close.on('click', function(){
+            parent.close();
+        });
         var pin = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
                                             'glyphicon-pushpin pull-right',
                                   'stlye' : 'z-index:99;' });
@@ -84,7 +90,7 @@ function messageViewer(channel)
             else
                 parent.unpinPanel();
         });
-        pin = $('<div />', { 'class' : 'clearfix col-xs-1' }).append(pin);
+        pin = $('<div />', { 'class' : 'clearfix pull-right' }).append(close).append(pin);
 
         panelHeading.append(pin);
         panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
@@ -138,6 +144,18 @@ function messageViewer(channel)
         $('#message-viewer-' + this.c + ' .message-viewer-content').css('visibility', 'visible');
     }
 
+    this.close = function()
+    {
+        this.closed = true;
+        $('.panel-' + parent.c).remove();
+    }
+
+    this.isClosed = function()
+    {
+        return this.closed;
+    }
+
     this.c = sanitize(channel);
     this.channel = channel;
+    this.closed = false;
 }
