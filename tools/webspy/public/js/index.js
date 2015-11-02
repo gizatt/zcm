@@ -12,9 +12,6 @@ function showChannel(channel, msg)
         viewerChannelIdx[channel] = viewers.length;
         viewers.push({});
         viewers[viewerChannelIdx[channel]] = mv
-
-        $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
-        $(".ui-resizable-se").removeClass("ui-icon");
     } else {
         if (viewers[viewerChannelIdx[channel]].isClosed()) {
             var mv = new messageViewer(channel);
@@ -22,6 +19,9 @@ function showChannel(channel, msg)
             viewers[viewerChannelIdx[channel]] = mv
         }
     }
+
+    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
+    $(".ui-resizable-se").removeClass("ui-icon");
 }
 
 var subscriptions = [];
