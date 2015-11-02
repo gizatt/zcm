@@ -8,14 +8,14 @@ function messageViewer(channel)
     {
         var currentHeight = ui.size.height;
 
-        var padding = $("#viewer-" + parent.c +
+        var padding = $("#message-viewer-" + parent.c +
                         " .panel-heading").height() +
-                      parseInt($("#viewer-" + parent.c +
+                      parseInt($("#message-viewer-" + parent.c +
                                  " .panel-heading").css("padding-top"), 10) +
-                      parseInt($("#viewer-" + parent.c +
+                      parseInt($("#message-viewer-" + parent.c +
                                  " .panel-heading").css("padding-bottom"), 10) +
-                      parseInt($("#viewer-" + parent.c +
-                                 " .viewer-content").css("padding-bottom"), 10) +
+                      parseInt($("#message-viewer-" + parent.c +
+                                 " .message-viewer-content").css("padding-bottom"), 10) +
                       parseInt($(this).css("margin-bottom"), 10) - 4;
 
         // this accounts for some lag in the ui.size value, if you take this away
@@ -23,8 +23,8 @@ function messageViewer(channel)
         $(this).height(currentHeight);
 
         // set the content panel width
-        $("#viewer-" + parent.c +
-          " .viewer-content").height(currentHeight - padding);
+        $("#message-viewer-" + parent.c +
+          " .message-viewer-content").height(currentHeight - padding);
     }
 
     this.updateViewer = function(msg)
@@ -50,7 +50,7 @@ function messageViewer(channel)
                 break;
 
             default:
-                $("#viewer-" + this.c + " .viewer-content #" + prefix).text(field);
+                $("#message-viewer-" + this.c + " .message-viewer-content #" + prefix).text(field);
                 break;
         }
     }
@@ -59,15 +59,15 @@ function messageViewer(channel)
     {
         var wrapper = $('<div />', {'class' : 'col-xs-1'});
 
-        var panel = $('<div />', { 'id' : 'viewer-' + this.c,
-                                   'class' : 'viewer panel panel-default ' +
+        var panel = $('<div />', { 'id' : 'message-viewer-' + this.c,
+                                   'class' : 'message-viewer panel panel-default ' +
                                              'ui-widget-conent',
                                    'style': 'position: fixed;' });
 
         var panelHeading = $('<div />', { 'class' : 'clearfix' });
 
 
-        panelHeading.append($('<div />', { 'class' : 'viewer-channel col-xs-10' })
+        panelHeading.append($('<div />', { 'class' : 'message-viewer-channel col-xs-10' })
                             .text(this.channel));
 
         var pin = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
@@ -86,7 +86,7 @@ function messageViewer(channel)
         panelHeading.append(pin);
         panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
 
-        var panelBody = $('<div />', { 'class' : 'viewer-content panel-body',
+        var panelBody = $('<div />', { 'class' : 'message-viewer-content panel-body',
                                        'style' : 'height:100%; width:100%; ' +
                                                  'overflow:auto;' });
         delete msg["__type"];
@@ -107,26 +107,26 @@ function messageViewer(channel)
 
     this.unpinPanel = function()
     {
-        $("#viewer-" + this.c).resizable({ disabled : false });
-        $("#viewer-" + this.c).draggable({ disabled : false });
-        $("#viewer-" + this.c).css("cursor", "move");
+        $("#message-viewer-" + this.c).resizable({ disabled : false });
+        $("#message-viewer-" + this.c).draggable({ disabled : false });
+        $("#message-viewer-" + this.c).css("cursor", "move");
     }
 
     this.pinPanel = function()
     {
-        $("#viewer-" + this.c).resizable({ disabled : true });
-        $("#viewer-" + this.c).draggable({ disabled : true });
-        $("#viewer-" + this.c).css("cursor", "");
+        $("#message-viewer-" + this.c).resizable({ disabled : true });
+        $("#message-viewer-" + this.c).draggable({ disabled : true });
+        $("#message-viewer-" + this.c).css("cursor", "");
     }
 
     this.hidePanel = function()
     {
-        $('#viewer-' + this.c + ' .viewer-content').css('visibility', 'hidden');
+        $('#message-viewer-' + this.c + ' .message-viewer-content').css('visibility', 'hidden');
     }
 
     this.showPanel = function()
     {
-        $('#viewer-' + this.c + ' .viewer-content').css('visibility', 'visible');
+        $('#message-viewer-' + this.c + ' .message-viewer-content').css('visibility', 'visible');
     }
 
     this.c = sanitize(channel);
