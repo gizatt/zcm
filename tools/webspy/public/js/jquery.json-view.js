@@ -37,18 +37,6 @@
         return item;
     };
 
-    function collapserFinish() {
-        $(".collapsed").each(function() {
-            var $this = $(this);
-
-            var block = $this.parent().children('.block');
-            var ul = block.children('ul');
-
-            ul.hide();
-            block.children('.dots, .comments').show();
-        })
-    }
-
     var formatter = function(json, opts, collapsed, prefix) {
         var options = $.extend({}, {
             nl2br: true
@@ -108,13 +96,22 @@
                             .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
+                            var tmp;
                             if (collapsed != null) {
                                 if (key in collapsed)
-                                    item.prepend(collapser(key, collapsed[key]));
+                                    tmp = collapser(key, collapsed[key]);
                                 else
-                                    item.prepend(collapser(key, options.collapsed));
+                                    tmp = collapser(key, options.collapsed);
                             } else {
-                                item.prepend(collapser(key, options.collapsed));
+                                tmp = collapser(key, options.collapsed);
+                            }
+                            item.prepend(tmp)
+                            if (tmp.hasClass("collapsed")) {
+                                var block = tmp.parent().children('.block');
+                                var ul = block.children('ul');
+
+                                ul.hide();
+                                block.children('.dots, .comments').show();
                             }
                         }
 
@@ -169,13 +166,22 @@
                             .append(genBlock(prefix + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
+                            var tmp;
                             if (collapsed != null) {
                                 if (key in collapsed)
-                                    item.prepend(collapser(key, collapsed[key]));
+                                    tmp = collapser(key, collapsed[key]);
                                 else
-                                    item.prepend(collapser(key, options.collapsed));
+                                    tmp = collapser(key, options.collapsed);
                             } else {
-                                item.prepend(collapser(key, options.collapsed));
+                                tmp = collapser(key, options.collapsed);
+                            }
+                            item.prepend(tmp)
+                            if (tmp.hasClass("collapsed")) {
+                                var block = tmp.parent().children('.block');
+                                var ul = block.children('ul');
+
+                                ul.hide();
+                                block.children('.dots, .comments').show();
                             }
                         }
 
@@ -286,8 +292,6 @@
         $this.append($('<div />', {
             class: 'json-view'
         }).append(formatter(json, options, collapsed[key], key)));
-
-        collapserFinish();
 
         return $this;
     };

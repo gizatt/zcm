@@ -8,13 +8,13 @@ function messageViewer(channel)
     {
         var currentHeight = ui.size.height;
 
-        var padding = $("#viewer-" + this.c +
+        var padding = $("#viewer-" + parent.c +
                         " .panel-heading").height() +
-                      parseInt($("#viewer-" + this.c +
+                      parseInt($("#viewer-" + parent.c +
                                  " .panel-heading").css("padding-top"), 10) +
-                      parseInt($("#viewer-" + this.c +
+                      parseInt($("#viewer-" + parent.c +
                                  " .panel-heading").css("padding-bottom"), 10) +
-                      parseInt($("#viewer-" + this.c +
+                      parseInt($("#viewer-" + parent.c +
                                  " .viewer-content").css("padding-bottom"), 10) +
                       parseInt($(this).css("margin-bottom"), 10) - 4;
 
@@ -23,7 +23,7 @@ function messageViewer(channel)
         $(this).height(currentHeight);
 
         // set the content panel width
-        $("#viewer-" + this.c +
+        $("#viewer-" + parent.c +
           " .viewer-content").height(currentHeight - padding);
     }
 
@@ -73,7 +73,6 @@ function messageViewer(channel)
         var pin = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
                                             'glyphicon-pushpin pull-right',
                                   'stlye' : 'z-index:99;' });
-        pin.prepend($('<div />', { 'class' : 'clearfix' }));
         pin.on('click', function(){
             $(this).toggleClass('active');
 
@@ -82,6 +81,7 @@ function messageViewer(channel)
             else
                 parent.unpinPanel();
         });
+        pin = $('<div />', { 'class' : 'clearfix col-xs-1' }).append(pin);
 
         panelHeading.append(pin);
         panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
@@ -107,8 +107,8 @@ function messageViewer(channel)
 
     this.unpinPanel = function()
     {
-        $("#viewer-" + this.c).resizable();
-        $("#viewer-" + this.c).draggable();
+        $("#viewer-" + this.c).resizable({ disabled : false });
+        $("#viewer-" + this.c).draggable({ disabled : false });
         $("#viewer-" + this.c).css("cursor", "move");
     }
 
