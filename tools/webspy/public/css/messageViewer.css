@@ -1,0 +1,19 @@
+.message-viewer {
+    min-height: 80px;
+    position: fixed !important;
+}
+
+.message-viewer-content.panel-body {
+    height: calc(100% - 43px);
+    width: 100%;
+    overflow: auto;
+}
+
+.message-viewer .panel-heading {
+    height: 43px;
+}
+
+.message-viewer-channel {
+    display: inline;
+    padding-left: 10px;
+}

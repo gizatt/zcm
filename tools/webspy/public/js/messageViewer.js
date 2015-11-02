@@ -26,8 +26,8 @@ function messageViewer(channel)
         $("#message-viewer-" + parent.c).height(height);
 
         // set the content panel width
-        $("#message-viewer-" + parent.c +
-          " .message-viewer-content").height(height - padding);
+        // $("#message-viewer-" + parent.c +
+        //   " .message-viewer-content").height(height - padding);
     }
 
     this.updateViewer = function(msg)
@@ -64,13 +64,12 @@ function messageViewer(channel)
 
         var panel = $('<div />', { 'id' : 'message-viewer-' + this.c,
                                    'class' : 'message-viewer panel panel-default ' +
-                                             'ui-widget-conent',
-                                   'style': 'position: fixed;' });
+                                             'ui-widget-conent' });
 
-        var panelHeading = $('<div />', { 'class' : 'clearfix' });
+        var panelHeading = $('<div />', { 'class' : 'clearfix row' });
 
 
-        panelHeading.append($('<div />', { 'class' : 'message-viewer-channel col-xs-10' })
+        panelHeading.append($('<div />', { 'class' : 'message-viewer-channel' })
                             .text(this.channel));
 
         var close = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
@@ -95,9 +94,7 @@ function messageViewer(channel)
         panelHeading.append(pin);
         panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
 
-        var panelBody = $('<div />', { 'class' : 'message-viewer-content panel-body',
-                                       'style' : 'height:100%; width:100%; ' +
-                                                 'overflow:auto;' });
+        var panelBody = $('<div />', { 'class' : 'message-viewer-content panel-body' });
         delete msg["__type"];
         delete msg["__hash"];
         panelBody.jsonView(msg, { collapsed : true }, this.c);

@@ -38,8 +38,9 @@ function channelViewer()
 
         row.append($('<td />', { 'class' : 'col-md-5' }).text(channel));
         row.append($('<td />', { 'class' : 'col-md-5' }).text(type));
-        row.append($('<td />', { 'class' : 'col-md-2 channel-viewer-hz-' + channelIdx,
-                                 'style' : 'text-align:right;' }).text(frequency));
+        row.append($('<td />', { 'class' : 'col-md-2 channel-viewer-hz ' +
+                                           'channel-viewer-hz-' + channelIdx })
+                     .text(frequency));
         return row;
     }
 
@@ -74,8 +75,7 @@ function channelViewer()
         if (channelClickCB)
             parent.cb = channelClickCB;
 
-        var panel = $('<div />', { 'class' : 'panel panel-default',
-                                   'style' : 'height:100%;' });
+        var panel = $('<div />', { 'class' : 'panel panel-default' });
         var panelBody = $('<div />', { 'class' : 'panel-body' });
         var tableWrapper = $('<div />', { 'class' : 'table-responsive' });
         var table = $('<table />', { 'class' : 'table table-hover table-striped ' +
@@ -83,16 +83,15 @@ function channelViewer()
         var header = $('<tr />');
         header.append($('<th />', { 'class' : 'col-md-5' }).text("Channel Name"));
         header.append($('<th />', { 'class' : 'col-md-5' }).text("Type"));
-        header.append($('<th />', { 'class' : 'col-md-2',
-                                    'style' : 'text-align:right;' }).text("Hz"));
+        header.append($('<th />', { 'class' : 'channel-viewer-hz col-md-2' }).text("Hz"));
         header = $('<thead />').append(header);
 
         var body = $('<tbody />', { 'class' : 'channel-viewer-table' });
 
         table.append(header).append(body);
 
-        var clearBtn = $('<button />', { 'class' : 'channel-viewer-clear col-md-12',
-                                         'style' : 'visibility:hidden;' }).text("Clear");
+        var clearBtn = $('<button />', { 'class' : 'channel-viewer-clear col-md-12'})
+                        .text("Clear");
         clearBtn.on('click', parent.clearHistory);
 
         tableWrapper.append(table);
