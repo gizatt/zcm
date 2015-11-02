@@ -9,3 +9,4 @@
 .json-view .comments{padding-left:.8em;font-style:italic;color:#888}
 .json-view .bool,.json-view .null,.json-view .num,.json-view .undef{font-weight:700;color:#1A01CC}
 .json-view .str{color:#800}
+.json-view .json-number{cursor:pointer;}

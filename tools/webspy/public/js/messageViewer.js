@@ -56,7 +56,8 @@ function messageViewer(channel)
                 if (!(prefix in this.graphFieldIdx)) {
                     var chart = new SmoothieChart({interpolation:'linear',
                                                    grid:{fillStyle:'#ffffff',
-                                                         strokeStyle:'#ebebeb'}});
+                                                         strokeStyle:'#ebebeb'},
+                                                   labels:{disabled:true}});
                     var line = new TimeSeries();
 
                     var canvas = document.getElementById(prefix + "-graph");
@@ -109,9 +110,9 @@ function messageViewer(channel)
             else
                 parent.unpinPanel();
         });
-        pin = $('<div />', { 'class' : 'clearfix pull-right' }).append(close).append(pin);
+        var tools = $('<div />', { 'class' : 'clearfix pull-right' }).append(close).append(pin);
 
-        panelHeading.append(pin);
+        panelHeading.append(tools);
         panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
 
         var panelBody = $('<div />', { 'class' : 'message-viewer-content panel-body' });

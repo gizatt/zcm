@@ -2,7 +2,11 @@
     text-align:right;
 }
 
-.channel-viewer-clear {
-    width: 100%;
-    visibility: hidden;
+.channel-viewer.panel {
+    min-height: 90px;
+}
+
+.channel-viewer .panel-body {
+    overflow : auto;
+    height : calc(100% - 43px);
 }

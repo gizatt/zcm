@@ -75,11 +75,37 @@ function channelViewer()
         if (channelClickCB)
             parent.cb = channelClickCB;
 
-        var panel = $('<div />', { 'class' : 'panel panel-default' });
+        var panel = $('<div />', { 'class' : 'panel panel-default channel-viewer' });
+
+        var panelHeading = $('<div />', { 'class' : 'clearfix row' });
+
         var panelBody = $('<div />', { 'class' : 'panel-body' });
+
+        var close = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
+                                            'glyphicon-remove pull-right',
+                                  'stlye' : 'z-index:99;' });
+        close.on('click', parent.clearHistory);
+        var pin = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
+                                            'glyphicon-pushpin pull-right active',
+                                  'stlye' : 'z-index:99;' });
+        pin.on('click', function(){
+            $(this).toggleClass('active');
+
+            if ($(this).hasClass('active'))
+                parent.pinPanel();
+            else
+                parent.unpinPanel();
+        });
+        var tools = $('<div />', { 'class' : 'clearfix pull-right' }).append(close).append(pin);
+
+        panelHeading.append(tools);
+        panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
+
+
         var tableWrapper = $('<div />', { 'class' : 'table-responsive' });
         var table = $('<table />', { 'class' : 'table table-hover table-striped ' +
                                                'list-table-fixed noselect' });
+
         var header = $('<tr />');
         header.append($('<th />', { 'class' : 'col-md-5' }).text("Channel Name"));
         header.append($('<th />', { 'class' : 'col-md-5' }).text("Type"));
@@ -90,16 +116,15 @@ function channelViewer()
 
         table.append(header).append(body);
 
-        var clearBtn = $('<button />', { 'class' : 'channel-viewer-clear col-md-12'})
-                        .text("Clear");
-        clearBtn.on('click', parent.clearHistory);
-
         tableWrapper.append(table);
-        tableWrapper.append(clearBtn);
-
         panelBody.append(tableWrapper);
 
+        panel.append(panelHeading);
         panel.append(panelBody);
+
+        panel.resizable({disabled:true});
+        panel.draggable({disabled:true});
+        panel.css("cursor", "");
 
         calcHertzLoop();
 
@@ -149,5 +174,19 @@ function channelViewer()
     this.onClear = function(clearCB)
     {
         parent.clearCB = clearCB;
+    }
+
+    this.unpinPanel = function()
+    {
+        $(".channel-viewer.panel").resizable({ disabled : false });
+        $(".channel-viewer.panel").draggable({ disabled : false });
+        $(".channel-viewer.panel").css("cursor", "move");
+    }
+
+    this.pinPanel = function()
+    {
+        $(".channel-viewer.panel").resizable({ disabled : true });
+        $(".channel-viewer.panel").draggable({ disabled : true });
+        $(".channel-viewer.panel").css("cursor", "");
     }
 }

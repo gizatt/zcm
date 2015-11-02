@@ -121,6 +121,7 @@
                                                          'id': prefix + key + '-graph' })
                                          .prop({'height':'20', 'width':'100'}));
                             item.append($('<div />', { 'class' : 'clearfix' }));
+                            item = $('<div />', { 'class' : 'json-number' }).append(item);
                         }
 
                         items.append(item);
@@ -193,6 +194,7 @@
                                                          'id': prefix + key + '-graph' })
                                          .prop({'height':'20', 'width':'100'}));
                             item.append($('<div />', { 'class' : 'clearfix' }));
+                            item = $('<div />', { 'class' : 'json-number' }).append(item);
                         }
 
                         items.append(item);
