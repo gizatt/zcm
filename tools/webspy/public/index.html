@@ -16,6 +16,7 @@
     <script src="js/handlebars-1.0.rc.1.min.js"></script>
     <script src="js/jquery.json-view.js"></script>
     <script src="js/jquery.ui.touch-punch.min.js"></script>
+    <script src="js/smoothie.js"></script>
   </head>
 
   <body>
@@ -43,28 +44,6 @@
     </div>
     <p><div id="viewers" class="col-xs-12"></div></p>
 
-    <script id="viewer-template" type="text/x-handlebars-template">
-      <div class="col-xs-1">
-        <div id="viewer-{{channel}}"
-             class="viewer panel panel-default ui-widget-content"
-             style="position: fixed;">
-          <div class="panel-heading">
-            <div class="clearfix">
-              <div class="viewer-channel col-xs-10"></div>
-              <div class="clearfix col-xs-1">
-                <div class="btn btn-xs glyphicon glyphicon-pushpin pull-right"
-                     style="z-index: 99;"
-                     onclick="$(this).toggleClass('active');
-                              pinViewer('{{channel}}', $(this).hasClass('active'));"></div>
-              </div>
-            </div>
-          </div>
-          <div class="viewer-content panel-body"
-               style="height:100%; width:100%; overflow: auto;"></div>
-        </div>
-      </div>
-    </script>
-
     <script id="messages-template" type="text/x-handlebars-template">
       {{#messages}}
         <tr id="{{channel}}" onclick="showChannel('{{channel}}');">
@@ -77,6 +56,7 @@
       {{/messages}}
     </script>
 
+    <script src="js/messageViewer.js"></script>
     <script src="js/index.js"></script>
   </body>
 

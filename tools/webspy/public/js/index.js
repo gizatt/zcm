@@ -38,7 +38,8 @@ function handle(channel, msg)
         setupChannelList();
 
     if (channel in viewerChannelIdx) {
-        updateViewer(channel, messages[channelIdx[channel]].msg);
+        viewers[viewerChannelIdx[channel]]["channel"].updateViewer(msg);
+        viewers[viewerChannelIdx[channel]]["channel"].showPanel();
     }
 }
 
@@ -56,104 +57,19 @@ function setupChannelList()
         $("#clear").css("visibility", "hidden");
 }
 
-function setupViewer(channel, msg)
-{
-    var channelSanitized = channel.replace(" ", "_");
-
-    if (channel in viewerChannelIdx) {
-        return;
-    }
-
-    viewerChannelIdx[channel] = viewers.length;
-    viewers.push({});
-    viewers[viewerChannelIdx[channel]]["channel"] = channelSanitized;
-
-    var source   = $("#viewer-template").html();
-    var template = Handlebars.compile(source);
-    var data = { channel: channelSanitized }
-    var res = template(data);
-    $("#viewers").append(res);
-
-
-    $("#viewer-" + channelSanitized + " .viewer-channel").text(channel);
-    delete msg["__type"];
-    delete msg["__hash"];
-    $("#viewer-" + channelSanitized + " .viewer-content").jsonView(msg, {collapsed: true},
-                                                                   channelSanitized);
-
-    $("#viewer-" + channelSanitized).resizable({
-        resize: function(event, ui){
-            var currentHeight = ui.size.height;
-
-
-            var padding = $("#viewer-" + channelSanitized +
-                            " .panel-heading").height() +
-                          parseInt($("#viewer-" + channelSanitized +
-                                     " .panel-heading").css("padding-top"), 10) +
-                          parseInt($("#viewer-" + channelSanitized +
-                                     " .panel-heading").css("padding-bottom"), 10) +
-                          parseInt($("#viewer-" + channelSanitized +
-                                     " .viewer-content").css("padding-bottom"), 10) +
-                          parseInt($(this).css("margin-bottom"), 10) - 4;
-
-            // this accounts for some lag in the ui.size value, if you take this away
-            // you'll get some instable behaviour
-            $(this).height(currentHeight);
-
-            // set the content panel width
-            $("#viewer-" + channelSanitized +
-              " .viewer-content").height(currentHeight - padding);
-        }
-    });
-
-    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
-    $(".ui-resizable-se").removeClass("ui-icon");
-
-    pinViewer(channelSanitized, false);
-}
-
-function updateViewer(channel, msg)
-{
-    var c = channel.replace(" ", "_");
-    delete msg["__type"];
-    delete msg["__hash"];
-
-    for (var field in msg) {
-        updateField(c, c + field, msg[field]);
-    }
-
-    if ($("#viewer-" + c + " .viewer-content").css("visibility") == "hidden") {
-        $(".viewer-content").css("visibility", "visible");
-    }
-}
-
-function updateField(channel, prefix, field)
-{
-    var type = $.type(field);
-    switch(type) {
-
-        case 'object':
-            for (var f in field) {
-                updateField(channel, prefix + f, field[f]);
-            }
-            break;
-
-        case 'array':
-            for (var i = 0; i < field.length; ++i) {
-                updateField(channel, prefix + i, field[i]);
-            }
-            break;
-
-        default:
-            $("#viewer-" + channel + " .viewer-content #" + prefix).text(field);
-            break;
-    }
-}
-
 function showChannel(channel)
 {
-    if (channel in channelIdx)
-        setupViewer(channel, messages[channelIdx[channel]].msg);
+    if ((channel in channelIdx) && (!(channel in viewers))) {
+        var mv = new messageViewer(channel);
+        $('#viewers').append(mv.createPanel(messages[channelIdx[channel]].msg));
+
+        viewerChannelIdx[channel] = viewers.length;
+        viewers.push({});
+        viewers[viewerChannelIdx[channel]]["channel"] = mv
+
+        $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
+        $(".ui-resizable-se").removeClass("ui-icon");
+    }
 }
 
 function calcHertzLoop()
@@ -194,19 +110,11 @@ function clearHistory()
     var template = Handlebars.compile(source);
     var data = { messages: messages }
     var res = template(data);
-    $(res).css("background-color", "red");
     $("#message-table").html(res);
-    $("#clear").css("visibility", "hidden");
-    $(".viewer-content").css("visibility", "hidden");
-}
 
-function pinViewer(channel, enabled)
-{
-    $("#viewer-" + channel).resizable({disabled:enabled});
-    $("#viewer-" + channel).draggable({disabled:enabled});
-    $("#viewer-" + channel).css("cursor", enabled ? "" : "move");
-    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
-    $(".ui-resizable-se").removeClass("ui-icon");
+    $("#clear").css("visibility", "hidden");
+
+    $(".viewer-content").css("visibility", "hidden");
 }
 
 var subscriptions = [];

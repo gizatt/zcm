@@ -118,8 +118,10 @@
                             }
                         }
 
-                        if (cnt > 0) {
-                            item.append(',');
+                        if ($.type(data) == 'number') {
+                            item.wrapInner($('<div />', {'style': 'float: left;'}));
+                            item.append($("<canvas />", {'style': 'overflow: hidden; height:16px;',
+                                                         'id': prefix + '-graph'}));
                         }
 
                         items.append(item);
@@ -177,8 +179,10 @@
                             }
                         }
 
-                        if (cnt > 0) {
-                            item.append(',');
+                        if ($.type(data) == 'number') {
+                            item.wrapInner($('<div />', {'style': 'float: left;'}));
+                            item.append($("<canvas />", {'style': 'overflow: hidden; height:16px;',
+                                                         'id': prefix + '-graph'}));
                         }
 
                         items.append(item);
