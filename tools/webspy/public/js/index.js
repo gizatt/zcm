@@ -5,7 +5,7 @@ var viewerChannelIdx = {};
 
 function showChannel(channel, msg)
 {
-    if (!(channel in viewers)) {
+    if (!(channel in viewerChannelIdx)) {
         var mv = new messageViewer(channel);
         $('#viewers').append(mv.createPanel(msg));
 

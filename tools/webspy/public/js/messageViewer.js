@@ -4,10 +4,13 @@ function messageViewer(channel)
 
     function sanitize(str) { return str.replace(" ", "_"); }
 
-    function resizePanel(event, ui)
+    function uiResizePanel(event, ui)
     {
-        var currentHeight = ui.size.height;
+        resizePanel(ui.size.height);
+    }
 
+    function resizePanel(height)
+    {
         var padding = $("#message-viewer-" + parent.c +
                         " .panel-heading").height() +
                       parseInt($("#message-viewer-" + parent.c +
@@ -16,15 +19,15 @@ function messageViewer(channel)
                                  " .panel-heading").css("padding-bottom"), 10) +
                       parseInt($("#message-viewer-" + parent.c +
                                  " .message-viewer-content").css("padding-bottom"), 10) +
-                      parseInt($(this).css("margin-bottom"), 10) - 4;
+                      parseInt($("#message-viewer-" + parent.c).css("margin-bottom"), 10) - 4;
 
         // this accounts for some lag in the ui.size value, if you take this away
         // you'll get some instable behaviour
-        $(this).height(currentHeight);
+        $("#message-viewer-" + parent.c).height(height);
 
         // set the content panel width
         $("#message-viewer-" + parent.c +
-          " .message-viewer-content").height(currentHeight - padding);
+          " .message-viewer-content").height(height - padding);
     }
 
     this.updateViewer = function(msg)
@@ -96,8 +99,14 @@ function messageViewer(channel)
         panel.append(panelHeading);
         panel.append(panelBody);
 
-        panel.resizable({ resize : resizePanel });
+        panel.resizable({ resize : uiResizePanel });
         panel.draggable();
+        // XXX Very hacky but cant get it to work without the delay of 1ms
+        panel.ready(function(){
+            setTimeout(function(){
+                panel.css(panel.position());
+            }, 1);
+        });
         panel.css("cursor", "move");
 
         wrapper.append(panel);
