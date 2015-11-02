@@ -117,8 +117,10 @@
 
                         if ($.type(data) == 'number') {
                             item.wrapInner($('<div />', {'style': 'float: left;'}));
-                            item.append($("<canvas />", {'style': 'overflow: hidden; height:16px;',
-                                                         'id': prefix + '-graph'}));
+                            item.append($("<canvas />", {'style': 'float: right; overflow: hidden;',
+                                                         'id': prefix + key + '-graph' })
+                                         .prop({'height':'20', 'width':'100'}));
+                            item.append($('<div />', { 'class' : 'clearfix' }));
                         }
 
                         items.append(item);
@@ -187,8 +189,10 @@
 
                         if ($.type(data) == 'number') {
                             item.wrapInner($('<div />', {'style': 'float: left;'}));
-                            item.append($("<canvas />", {'style': 'overflow: hidden; height:16px;',
-                                                         'id': prefix + '-graph'}));
+                            item.append($("<canvas />", {'style': 'float: right; overflow: hidden;',
+                                                         'id': prefix + key + '-graph' })
+                                         .prop({'height':'20', 'width':'100'}));
+                            item.append($('<div />', { 'class' : 'clearfix' }));
                         }
 
                         items.append(item);
