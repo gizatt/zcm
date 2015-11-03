@@ -70,37 +70,12 @@ function channelViewer()
         }, 500);
     }
 
+    this.prototype = new panel();
+
     this.createPanel = function(channelClickCB)
     {
         if (channelClickCB)
             parent.cb = channelClickCB;
-
-        var panel = $('<div />', { 'class' : 'panel panel-default channel-viewer' });
-
-        var panelHeading = $('<div />', { 'class' : 'clearfix row' });
-
-        var panelBody = $('<div />', { 'class' : 'panel-body' });
-
-        var close = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
-                                            'glyphicon-remove pull-right',
-                                  'stlye' : 'z-index:99;' });
-        close.on('click', parent.clearHistory);
-        var pin = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
-                                            'glyphicon-pushpin pull-right active',
-                                  'stlye' : 'z-index:99;' });
-        pin.on('click', function(){
-            $(this).toggleClass('active');
-
-            if ($(this).hasClass('active'))
-                parent.pinPanel();
-            else
-                parent.unpinPanel();
-        });
-        var tools = $('<div />', { 'class' : 'clearfix pull-right' }).append(close).append(pin);
-
-        panelHeading.append(tools);
-        panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
-
 
         var tableWrapper = $('<div />', { 'class' : 'table-responsive' });
         var table = $('<table />', { 'class' : 'table table-hover table-striped ' +
@@ -109,22 +84,16 @@ function channelViewer()
         var header = $('<tr />');
         header.append($('<th />', { 'class' : 'col-md-5' }).text("Channel Name"));
         header.append($('<th />', { 'class' : 'col-md-5' }).text("Type"));
-        header.append($('<th />', { 'class' : 'channel-viewer-hz col-md-2' }).text("Hz"));
+        header.append($('<th />', { 'class' : 'hz col-md-2' }).text("Hz"));
         header = $('<thead />').append(header);
 
         var body = $('<tbody />', { 'class' : 'channel-viewer-table' });
 
         table.append(header).append(body);
-
         tableWrapper.append(table);
-        panelBody.append(tableWrapper);
 
-        panel.append(panelHeading);
-        panel.append(panelBody);
-
-        panel.resizable({disabled:true});
-        panel.draggable({disabled:true});
-        panel.css("cursor", "");
+        var panel = parent.prototype.createPanel(null, tableWrapper);
+        parent.prototype.overrideClose(parent.clearHistory);
 
         calcHertzLoop();
 
@@ -152,12 +121,10 @@ function channelViewer()
         parent.messages[parent.channelIdx[channel]]["lastUtime"]  = lastUtime;
         parent.messages[parent.channelIdx[channel]]["msg"]        = msg;
 
-        $(".channel-viewer-clear").css("visibility", "visible");
-
         if (newChannel) {
             var row = newChannelDiv(channel, msg.__type, 0,
                                     parent.channelIdx[channel], parent.cb);
-            $(".channel-viewer-table").append(row);
+            $("#" + parent.prototype.panelId + " .channel-viewer-table").append(row);
         }
     }
 
@@ -165,8 +132,7 @@ function channelViewer()
     {
         parent.messages = [];
         parent.channelIdx = {};
-        $(".channel-viewer-clear").css("visibility", "hidden");
-        $(".channel-viewer-table").html("");
+        $("#" + parent.prototype.panelId + " .channel-viewer-table").html("");
 
         parent.clearCB();
     }
@@ -174,19 +140,5 @@ function channelViewer()
     this.onClear = function(clearCB)
     {
         parent.clearCB = clearCB;
-    }
-
-    this.unpinPanel = function()
-    {
-        $(".channel-viewer.panel").resizable({ disabled : false });
-        $(".channel-viewer.panel").draggable({ disabled : false });
-        $(".channel-viewer.panel").css("cursor", "move");
-    }
-
-    this.pinPanel = function()
-    {
-        $(".channel-viewer.panel").resizable({ disabled : true });
-        $(".channel-viewer.panel").draggable({ disabled : true });
-        $(".channel-viewer.panel").css("cursor", "");
     }
 }
