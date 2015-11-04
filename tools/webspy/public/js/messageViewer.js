@@ -4,6 +4,36 @@ function messageViewer(channel)
 
     function sanitize(str) { return str.replace(" ", "_"); }
 
+    this.__proto__ = new panel();
+
+    this.createPanel = function(msg)
+    {
+        var wrapper = $('<div />', {'class' : 'message-viewer'});
+
+        var body = $('<div />', { 'class' : 'content' });
+        delete msg["__type"];
+        delete msg["__hash"];
+        body.jsonView(msg, { collapsed : true }, parent.c);
+
+        var header = $('<div />', { 'class' : 'channel' }).text(parent.channel);
+
+        var panel = parent.__proto__.createPanel(header, body, "panel-info");
+
+        wrapper.append(panel);
+
+        return wrapper;
+    }
+
+    this.hidePanel = function()
+    {
+        $('#' + parent.__proto__.panelId + ' .content').css('visibility', 'hidden');
+    }
+
+    this.showPanel = function()
+    {
+        $('#' + parent.__proto__.panelId + ' .content').css('visibility', 'visible');
+    }
+
     this.updateViewer = function(msg, utime)
     {
         for (var f in msg)
@@ -51,36 +81,6 @@ function messageViewer(channel)
                 $("#message-viewer-" + this.c + " .message-viewer-content #" + prefix).text(field);
                 break;
         }
-    }
-
-    this.__proto__ = new panel();
-
-    this.createPanel = function(msg)
-    {
-        var wrapper = $('<div />', {'class' : 'col-xs-1 message-viewer'});
-
-        var body = $('<div />', { 'class' : 'content' });
-        delete msg["__type"];
-        delete msg["__hash"];
-        body.jsonView(msg, { collapsed : true }, parent.c);
-
-        var header = $('<div />', { 'class' : 'channel' }).text(parent.channel);
-
-        var panel = parent.__proto__.createPanel(header, body);
-
-        wrapper.append(panel);
-
-        return wrapper;
-    }
-
-    this.hidePanel = function()
-    {
-        $('#' + parent.__proto__.panelId + ' .content').css('visibility', 'hidden');
-    }
-
-    this.showPanel = function()
-    {
-        $('#' + parent.__proto__.panelId + ' .content').css('visibility', 'visible');
     }
 
     this.graphs = [];

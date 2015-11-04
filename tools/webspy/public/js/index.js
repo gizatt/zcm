@@ -45,4 +45,10 @@ onload = function()
             viewers[mv].hidePanel();
         }
     });
+
+    var chart = new chartViewer("utime");
+    $('#viewers').append(chart.createPanel());
+
+    $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
+    $(".ui-resizable-se").removeClass("ui-icon");
 }

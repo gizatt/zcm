@@ -3,10 +3,12 @@ function panel()
 {
     var parent = this;
 
-    this.createPanel = function(header, body)
+    this.createPanel = function(header, body, panelClass)
     {
+        if (!panelClass) panelClass = "panel-default";
+
         var panel = $('<div />', { 'id' : parent.panelId,
-                                   'class' : 'panel panel-default' });
+                                   'class' : 'panel ' + panelClass });
 
         var panelHeading = $('<div />', { 'class' : 'clearfix row' });
         if (header)

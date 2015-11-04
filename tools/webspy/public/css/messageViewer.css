@@ -1,13 +1,10 @@
 .message-viewer .panel {
-    min-height: 80px;
+    min-height: 8rem;
+    min-width: 20rem;
     position: fixed !important;
-}
-
-.message-viewer .panel-heading {
-    height: 43px;
 }
 
 .message-viewer .channel {
     display: inline;
-    padding-left: 10px;
+    padding-left: 1rem;
 }
