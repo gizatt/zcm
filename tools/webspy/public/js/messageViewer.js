@@ -79,11 +79,11 @@ function messageViewer(channel)
         }
     }
 
-    this.prototype = new panel();
+    this.__proto__ = new panel();
 
     this.createPanel = function(msg)
     {
-        var wrapper = $('<div />', {'class' : 'col-xs-1'});
+        var wrapper = $('<div />', {'class' : 'col-xs-1 message-viewer'});
 
         var body = $('<div />', { 'class' : 'content' });
         delete msg["__type"];
@@ -92,7 +92,7 @@ function messageViewer(channel)
 
         var header = $('<div />', { 'class' : 'channel' }).text(parent.channel);
 
-        var panel = parent.prototype.createPanel(header, body);
+        var panel = parent.__proto__.createPanel(header, body);
 
         wrapper.append(panel);
 
@@ -101,12 +101,12 @@ function messageViewer(channel)
 
     this.hidePanel = function()
     {
-        $('#' + parent.prototype.panelId + ' .content').css('visibility', 'hidden');
+        $('#' + parent.__proto__.panelId + ' .content').css('visibility', 'hidden');
     }
 
     this.showPanel = function()
     {
-        $('#' + parent.prototype.panelId + ' .content').css('visibility', 'visible');
+        $('#' + parent.__proto__.panelId + ' .content').css('visibility', 'visible');
     }
 
     this.graphs = [];

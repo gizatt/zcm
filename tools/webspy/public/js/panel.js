@@ -17,19 +17,17 @@ function panel()
             panelBody.append(body);
 
         var close = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
-                                            'glyphicon-remove pull-right',
+                                             'glyphicon-remove pull-right',
                                   'stlye' : 'z-index:99;' });
         close.on('click', parent.close);
         var pin = $('<div />', { 'class' : 'btn btn-xs glyphicon ' +
-                                            'glyphicon-pushpin pull-right',
+                                           'glyphicon-pushpin pull-right',
                                   'stlye' : 'z-index:99;' });
         pin.on('click', function(){
-            $(this).toggleClass('active');
-
             if ($(this).hasClass('active'))
-                parent.pinPanel();
-            else
                 parent.unpinPanel();
+            else
+                parent.pinPanel();
         });
         var tools = $('<div />', { 'class' : 'clearfix pull-right' }).append(close).append(pin);
 
@@ -48,6 +46,7 @@ function panel()
 
     this.unpinPanel = function()
     {
+        $("#" + parent.panelId + " .glyphicon-pushpin").removeClass('active');
         $("#" + parent.panelId + ".panel").resizable({ disabled : false });
         $("#" + parent.panelId + ".panel").draggable({ disabled : false });
         $("#" + parent.panelId + ".panel").css("cursor", "move");
@@ -55,6 +54,7 @@ function panel()
 
     this.pinPanel = function()
     {
+        $("#" + parent.panelId + " .glyphicon-pushpin").addClass('active');
         $("#" + parent.panelId + ".panel").resizable({ disabled : true });
         $("#" + parent.panelId + ".panel").draggable({ disabled : true });
         $("#" + parent.panelId + ".panel").css("cursor", "");
@@ -62,20 +62,25 @@ function panel()
 
     this.close = function()
     {
-        this.closed = true;
+        if (parent._close) {
+            parent._close();
+            return;
+        }
+        parent.closed = true;
         $("#" + parent.panelId).remove();
     }
 
     this.isClosed = function()
     {
-        return this.closed;
+        return parent.closed;
     }
 
     this.overrideClose = function(override)
     {
-        this.close = override;
+        parent._close = override;
     }
 
     this.panelId = "panel-" + __PANEL_KEYS_ZCM__.push(__PANEL_KEYS_ZCM__.length - 1);
     this.closed = false;
+    this._close = null;
 }

@@ -38,8 +38,8 @@ function channelViewer()
 
         row.append($('<td />', { 'class' : 'col-md-5' }).text(channel));
         row.append($('<td />', { 'class' : 'col-md-5' }).text(type));
-        row.append($('<td />', { 'class' : 'col-md-2 channel-viewer-hz ' +
-                                           'channel-viewer-hz-' + channelIdx })
+        row.append($('<td />', { 'class' : 'col-md-2 hz ' +
+                                           'hz-' + channelIdx })
                      .text(frequency));
         return row;
     }
@@ -61,7 +61,7 @@ function channelViewer()
                     } else {
                         freq = 1000000 / dt;
                     }
-                    var id = ".channel-viewer-hz-" +
+                    var id = ".channel-viewer .hz-" +
                              parent.channelIdx[parent.messages[m]["channel"]];
                     $(id).text(freq.toFixed(2));
                 }
@@ -70,12 +70,14 @@ function channelViewer()
         }, 500);
     }
 
-    this.prototype = new panel();
+    this.__proto__ = new panel();
 
     this.createPanel = function(channelClickCB)
     {
         if (channelClickCB)
             parent.cb = channelClickCB;
+
+        var wrapper = $('<div />', {'class' : 'channel-viewer'});
 
         var tableWrapper = $('<div />', { 'class' : 'table-responsive' });
         var table = $('<table />', { 'class' : 'table table-hover table-striped ' +
@@ -92,12 +94,15 @@ function channelViewer()
         table.append(header).append(body);
         tableWrapper.append(table);
 
-        var panel = parent.prototype.createPanel(null, tableWrapper);
-        parent.prototype.overrideClose(parent.clearHistory);
+        var panel = parent.__proto__.createPanel(null, tableWrapper);
+        parent.__proto__.overrideClose(parent.clearHistory);
+        panel.ready(function(){setTimeout(parent.__proto__.pinPanel,1);});
 
         calcHertzLoop();
 
-        return panel;
+        wrapper.append(panel);
+
+        return wrapper;
     }
 
     this.handle = function(channel, msg)
@@ -124,7 +129,7 @@ function channelViewer()
         if (newChannel) {
             var row = newChannelDiv(channel, msg.__type, 0,
                                     parent.channelIdx[channel], parent.cb);
-            $("#" + parent.prototype.panelId + " .channel-viewer-table").append(row);
+            $("#" + parent.__proto__.panelId + " .channel-viewer-table").append(row);
         }
     }
 
@@ -132,7 +137,7 @@ function channelViewer()
     {
         parent.messages = [];
         parent.channelIdx = {};
-        $("#" + parent.prototype.panelId + " .channel-viewer-table").html("");
+        $("#" + parent.__proto__.panelId + " .channel-viewer-table").html("");
 
         parent.clearCB();
     }

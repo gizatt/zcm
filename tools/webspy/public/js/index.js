@@ -29,7 +29,7 @@ var subscriptions = [];
 onload = function()
 {
     z = zcm.create()
-    var cv = new channelViewer();
+    cv = new channelViewer();
     subscriptions.push({channel: ".*",
                         subscription: z.subscribe_all(function(channel, msg){
                             cv.handle(channel, msg);
