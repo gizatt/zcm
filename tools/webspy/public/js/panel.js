@@ -35,7 +35,7 @@ function panel()
         panelHeading = $('<div />', { 'class' : 'panel-heading' }).append(panelHeading);
 
         panel.append(panelHeading);
-        panel.append(panelBody);
+        panel.append($('<div />', { 'class' : 'panel-panel-body' }).append(panelBody));
 
         panel.resizable();
         panel.draggable();

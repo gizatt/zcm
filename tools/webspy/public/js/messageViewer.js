@@ -4,32 +4,6 @@ function messageViewer(channel)
 
     function sanitize(str) { return str.replace(" ", "_"); }
 
-    function uiResizePanel(event, ui)
-    {
-        resizePanel(ui.size.height);
-    }
-
-    function resizePanel(height)
-    {
-        var padding = $("#message-viewer-" + parent.c +
-                        " .panel-heading").height() +
-                      parseInt($("#message-viewer-" + parent.c +
-                                 " .panel-heading").css("padding-top"), 10) +
-                      parseInt($("#message-viewer-" + parent.c +
-                                 " .panel-heading").css("padding-bottom"), 10) +
-                      parseInt($("#message-viewer-" + parent.c +
-                                 " .message-viewer-content").css("padding-bottom"), 10) +
-                      parseInt($("#message-viewer-" + parent.c).css("margin-bottom"), 10) - 4;
-
-        // this accounts for some lag in the ui.size value, if you take this away
-        // you'll get some instable behaviour
-        $("#message-viewer-" + parent.c).height(height);
-
-        // set the content panel width
-        // $("#message-viewer-" + parent.c +
-        //   " .message-viewer-content").height(height - padding);
-    }
-
     this.updateViewer = function(msg, utime)
     {
         for (var f in msg)

@@ -3,12 +3,6 @@
     position: fixed !important;
 }
 
-.message-viewer .panel-body {
-    height: calc(100% - 43px);
-    width: 100%;
-    overflow: auto;
-}
-
 .message-viewer .panel-heading {
     height: 43px;
 }
