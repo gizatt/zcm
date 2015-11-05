@@ -38,6 +38,8 @@
     };
 
     var formatter = function(json, opts, collapsed, prefix) {
+        function sanitize(str) { return str.replace(new RegExp(" ", 'g'), ""); }
+
         var options = $.extend({}, {
             nl2br: true
         }, opts);
@@ -93,7 +95,7 @@
                             .append(key)
                             .append(span('"', 'q'))
                             .append(': ')
-                            .append(genBlock(prefix + key, data, level + 1));
+                            .append(genBlock(prefix + " " + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
                             var tmp;
@@ -118,7 +120,8 @@
                         if ($.type(data) == 'number') {
                             item.wrapInner($('<div />', {'style': 'float: left;'}));
                             item.append($("<canvas />", {'style': 'float: right; overflow: hidden;',
-                                                         'id': prefix + key + '-graph' })
+                                                         'id': sanitize(prefix + " " + key) +
+                                                               '-graph' })
                                          .prop({'height':'20', 'width':'100'}));
                             item.append($('<div />', { 'class' : 'clearfix' }));
                             item = $('<div />', { 'class' : 'json-number' }).append(item);
@@ -166,7 +169,7 @@
                     $.each(val, function(key, data) {
                         cnt--;
                         var item = $('<li />')
-                            .append(genBlock(prefix + key, data, level + 1));
+                            .append(genBlock(prefix + " " + key, data, level + 1));
 
                         if (['object', 'array'].indexOf($.type(data)) !== -1 && !$.isEmptyObject(data)) {
                             var tmp;
@@ -191,7 +194,8 @@
                         if ($.type(data) == 'number') {
                             item.wrapInner($('<div />', {'style': 'float: left;'}));
                             item.append($("<canvas />", {'style': 'float: right; overflow: hidden;',
-                                                         'id': prefix + key + '-graph' })
+                                                         'id': sanitize(prefix + " " + key) +
+                                                               '-graph' })
                                          .prop({'height':'20', 'width':'100'}));
                             item.append($('<div />', { 'class' : 'clearfix' }));
                             item = $('<div />', { 'class' : 'json-number' }).append(item);
@@ -230,7 +234,7 @@
                     }
 
                     var text = $('<span />', {
-                                    'id': prefix,
+                                    'id': sanitize(prefix),
                                     'class': 'str'
                                 }).html(val);
 
@@ -241,25 +245,25 @@
 
                 case 'number':
                     return $('<span />', {
-                                'id': prefix,
+                                'id': sanitize(prefix),
                                 'class': 'num'
-                            }).html(val.toString());
+                            }).attr('data-field', prefix).html(val.toString());
 
                 case 'undefined':
                     return $('<span />', {
-                                'id': prefix,
+                                'id': sanitize(prefix),
                                 'class': 'undef'
                             }).html('undefined');
 
                 case 'null':
                     return $('<span />', {
-                                'id': prefix,
+                                'id': sanitize(prefix),
                                 'class': 'null'
                             }).html('null');
 
                 case 'boolean':
                     return $('<span />', {
-                                'id': prefix,
+                                'id': sanitize(prefix),
                                 'class': 'bool'
                             }).html(val ? 'true' : 'false');
             }

@@ -2,75 +2,13 @@ function channelViewer()
 {
     var parent = this;
 
+    this.__proto__ = new panel();
+
     this.cb = function(){}
     this.clearCB = function(){}
 
     this.messages = [];
     this.channelIdx = {};
-
-    now = function()
-    {
-        // Returns the number of milliseconds elapsed since either the browser
-        // navigationStart event or the UNIX epoch, depending on availability.
-        // Where the browser supports 'performance' we use that as it is more
-        // accurate (microsoeconds will be returned in the fractional part) and
-        // more reliable as it does not rely on the system time.
-        // Where 'performance' is not available, we will fall back to Date().getTime().
-        var performance = window.performance || {};
-
-        performance.now = (function() {
-            return performance.now    ||
-            performance.webkitNow     ||
-            performance.msNow         ||
-            performance.oNow          ||
-            performance.mozNow        ||
-            function() { return new Date().getTime(); };
-            })();
-
-        return performance.now();
-    };
-
-    function newChannelDiv(channel, type, frequency, channelIdx, cb)
-    {
-        var row = $('<tr />').on('click', function(){
-            cb(channel, parent.messages[channelIdx].msg);
-        });
-
-        row.append($('<td />', { 'class' : 'col-md-5' }).text(channel));
-        row.append($('<td />', { 'class' : 'col-md-5' }).text(type));
-        row.append($('<td />', { 'class' : 'col-md-2 hz ' +
-                                           'hz-' + channelIdx })
-                     .text(frequency));
-        return row;
-    }
-
-    function calcHertzLoop()
-    {
-        setTimeout(function() {
-            for (var m in parent.messages) {
-                if (parent.messages[m]["utime"] != parent.messages[m]["lastUtime"]) {
-
-                    var dt = parent.messages[m]["utime"] - parent.messages[m]["lastUtime"];
-                    var dtPredict = now() * 1000 - parent.messages[m]["utime"];
-
-                    var freq;
-                    if (dtPredict > dt * 3) {
-                        freq = 0;
-                    } else if (dtPredict > dt) {
-                        freq = 1000000 / dtPredict;
-                    } else {
-                        freq = 1000000 / dt;
-                    }
-                    var id = ".channel-viewer .hz-" +
-                             parent.channelIdx[parent.messages[m]["channel"]];
-                    $(id).text(freq.toFixed(2));
-                }
-            }
-            calcHertzLoop();
-        }, 500);
-    }
-
-    this.__proto__ = new panel();
 
     this.createPanel = function(channelClickCB)
     {
@@ -145,5 +83,67 @@ function channelViewer()
     this.onClear = function(clearCB)
     {
         parent.clearCB = clearCB;
+    }
+
+    now = function()
+    {
+        // Returns the number of milliseconds elapsed since either the browser
+        // navigationStart event or the UNIX epoch, depending on availability.
+        // Where the browser supports 'performance' we use that as it is more
+        // accurate (microsoeconds will be returned in the fractional part) and
+        // more reliable as it does not rely on the system time.
+        // Where 'performance' is not available, we will fall back to Date().getTime().
+        var performance = window.performance || {};
+
+        performance.now = (function() {
+            return performance.now    ||
+            performance.webkitNow     ||
+            performance.msNow         ||
+            performance.oNow          ||
+            performance.mozNow        ||
+            function() { return new Date().getTime(); };
+            })();
+
+        return performance.now();
+    };
+
+    function newChannelDiv(channel, type, frequency, channelIdx, cb)
+    {
+        var row = $('<tr />').on('click', function(){
+            cb(channel, parent.messages[channelIdx].msg);
+        });
+
+        row.append($('<td />', { 'class' : 'col-md-5' }).text(channel));
+        row.append($('<td />', { 'class' : 'col-md-5' }).text(type));
+        row.append($('<td />', { 'class' : 'col-md-2 hz ' +
+                                           'hz-' + channelIdx })
+                     .text(frequency));
+        return row;
+    }
+
+    function calcHertzLoop()
+    {
+        setTimeout(function() {
+            for (var m in parent.messages) {
+                if (parent.messages[m]["utime"] != parent.messages[m]["lastUtime"]) {
+
+                    var dt = parent.messages[m]["utime"] - parent.messages[m]["lastUtime"];
+                    var dtPredict = now() * 1000 - parent.messages[m]["utime"];
+
+                    var freq;
+                    if (dtPredict > dt * 3) {
+                        freq = 0;
+                    } else if (dtPredict > dt) {
+                        freq = 1000000 / dtPredict;
+                    } else {
+                        freq = 1000000 / dt;
+                    }
+                    var id = ".channel-viewer .hz-" +
+                             parent.channelIdx[parent.messages[m]["channel"]];
+                    $(id).text(freq.toFixed(2));
+                }
+            }
+            calcHertzLoop();
+        }, 500);
     }
 }

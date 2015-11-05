@@ -1,0 +1,15 @@
+.chart-viewer .panel {
+    min-height: 15rem;
+    min-width:  20rem;
+    position: fixed !important;
+}
+
+.chart-viewer .title {
+    display: inline;
+    padding-left: 1rem;
+}
+
+.chart-viewer .chart {
+    width: 600px;
+    height: 400px;
+}
