@@ -89,10 +89,21 @@ function messageViewer(channel)
         }
     }
 
-    this.onFieldClick = function(fieldClickCB)
+    this.onFieldRightClick = function(fieldRightClickCB)
     {
-        $('.message-viewer .json-number').on('click', function(){
-            fieldClickCB(parent.channel, $(this).find(".num"));
+        var ready;
+        $('.message-viewer .json-number').on('mousedown', function(event){
+            if (event.which == 3)
+                return false;
+            else
+                return true;
+        });
+        $('.message-viewer .json-number').on('mouseup', function(event){
+            if (event.which == 3) {
+                ready = true;
+                fieldRightClickCB(parent.channel, $(this).find(".num"));
+            }
+            return true;
         });
     }
 }

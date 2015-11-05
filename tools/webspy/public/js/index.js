@@ -6,23 +6,20 @@ var viewerChannelIdx = {};
 var chartViewers = [];
 var channelChartMap = {};
 
+var menuList;
+
 function showChannel(channel, msg)
 {
     if (!(channel in viewerChannelIdx)) {
         var mv = new messageViewer(channel);
 
-        $('#viewers').append(mv.createPanel(msg));
+        var panel = mv.createPanel(msg);
+        panel.find('.json-number').attr('data-toggle', 'context')
+                                  .attr('data-target', '#chart-menu');
+        panel.find('.json-number').attr('oncontextmenu', 'return false;');
+        $('#viewers').append(panel);
 
-        mv.onFieldClick(function(channel, field){
-            var chart = new chartViewer(field.attr('data-field'));
-            if (!(channel in channelChartMap))
-                channelChartMap[channel] = [];
-            chartViewers.push({"chart" : chart,
-                               "fields" : [{"channel" : channel,
-                                            "fieldId" : field.attr('data-field')}]});
-            channelChartMap[channel].push(chartViewers[chartViewers.length - 1]);
-            $('#viewers').append(chart.createPanel())
-        });
+        mv.onFieldRightClick(fieldRightClick);
 
         viewerChannelIdx[channel] = viewers.length;
         viewers.push({});
@@ -30,13 +27,63 @@ function showChannel(channel, msg)
     } else {
         if (viewers[viewerChannelIdx[channel]].isClosed()) {
             var mv = new messageViewer(channel);
-            $('#viewers').append(mv.createPanel(msg));
+
+            var panel = mv.createPanel(msg);
+            panel.find('.json-number').attr('data-toggle', 'context')
+                                      .attr('data-target', '#chart-menu');
+            panel.find('.json-number').attr('oncontextmenu', 'return false;');
+            $('#viewers').append(panel);
+
+            mv.onFieldRightClick(fieldRightClick);
+
             viewers[viewerChannelIdx[channel]] = mv
         }
     }
 
     $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
     $(".ui-resizable-se").removeClass("ui-icon");
+}
+
+function fieldRightClick(channel, field)
+{
+    menuList.html('');
+
+    var newChart = $('<a />', { 'tabindex' : -1,
+                                'href' : 'javascript:void(0);' })
+                        .text("New Graph")
+                        .attr('data-viewer-idx', -1);
+    newChart = $('<li />').append(newChart);
+    menuList.append(newChart);
+
+    for (var chart in chartViewers) {
+        console.log(chart);
+        var item = $('<a />', { 'tabindex' : -1,
+                                'href' : 'javascript:void(0);' })
+                        .text(chartViewers[chart]["chart"].title)
+                        .attr('data-viewer-idx', chart);
+        item = $('<li />').append(item);
+        menuList.append(item);
+    }
+
+    $('#chart-menu').contextmenu();
+
+    $('#chart-menu li').on('click', function(){
+        var idx = $(this).find('a').attr('data-viewer-idx');
+        if (idx == -1) {
+            var chart = new chartViewer(field.attr('data-field'));
+            chartViewers.push({"chart" : chart,
+                               "fields" : [{"channel" : channel,
+                                            "fieldId" : field.attr('data-field')}]});
+            idx = 0;
+            $('#viewers').append(chart.createPanel())
+        } else {
+            chartViewers[idx]["fields"].push({"channel" : channel,
+                                              "fieldId" : field.attr('data-field')});
+        }
+        if (!(channel in channelChartMap))
+            channelChartMap[channel] = [];
+        channelChartMap[channel].push(chartViewers[idx]);
+    });
 }
 
 function updateChart(chart, msg, channel)
@@ -120,6 +167,13 @@ onload = function()
             viewers[mv].hidePanel();
         }
     });
+
+    menuList = $('<ul />', { 'class' : 'dropdown-menu',
+                             'role' : 'menu' });
+
+    var menu = $('<div />', { 'id' : 'chart-menu' }).append(menuList);
+
+    $('body').append(menu);
 
     $(".ui-resizable-se").removeClass("ui-icon-gripsmall-diagonal-se");
     $(".ui-resizable-se").removeClass("ui-icon");
