@@ -7,6 +7,7 @@
 
 #include "zcm/zcm.h"
 #include "zcm/eventlog.h"
+#include "zcm/server.h"
 
 namespace zcm {
 
@@ -20,6 +21,7 @@ struct ZCM
     // TODO: update to match new url based zcm_create
     inline ZCM();
     inline ZCM(const std::string& transport);
+    inline ZCM(zcm_t *zcm);
     inline ~ZCM();
 
     inline bool good() const;
@@ -31,6 +33,8 @@ struct ZCM
     inline void start();
     inline void stop();
     inline int handle();
+
+    inline void flush();
 
     inline int publish(const std::string& channel, const char *data, uint32_t len);
 
@@ -96,6 +100,19 @@ class Subscription
     {
         ((Subscription*)usr)->dispatch(rbuf, channel);
     }
+};
+
+
+class ZCMServer
+{
+public:
+    inline ZCMServer(const std::string& url);
+    inline ~ZCMServer();
+    inline bool good() const;
+    inline ZCM accept(int timeout);
+
+private:
+    zcm_server_t *svr;
 };
 
 // TODO: why not use or inherrit from the existing zcm data structures for the below
