@@ -119,10 +119,12 @@ struct LogPlayer
     static void handler(const zcm::ReceiveBuffer *rbuf, const string& channel, void *usr)
     {
         LogPlayer* lp = (LogPlayer *) usr;
+
+        lp->zcmOut->publish(channel, rbuf->data, rbuf->data_size);
+
         if (lp->args.verbose)
             printf("%.3f Channel %-20s size %d\n", rbuf->recv_utime / 1e6,
                     channel.c_str(), rbuf->data_size);
-       lp->zcmOut->publish(channel, rbuf->data, rbuf->data_size);
     }
 };
 

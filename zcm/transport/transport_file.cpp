@@ -4,7 +4,6 @@
 
 #include "zcm/zcm-cpp.hpp"
 #include "zcm/util/debug.h"
-//#include "zcm/util/lockfile.h"
 
 #include "util/Types.hpp"
 #include "util/TimeUtil.hpp"
@@ -140,23 +139,17 @@ struct ZCM_TRANS_CLASSNAME : public zcm_trans_t
         msg->len = le->datalen;
         msg->buf = le->data;
 
-        u64 now = TimeUtil::utime();
-
-        if (lastMsgUtime == 0)
-            lastMsgUtime = msg->utime;
-
-        if (lastDispatchUtime == 0)
-            lastDispatchUtime = now;
-
-        u64 localDiff = now - lastDispatchUtime;
-        u64 logDiff = msg->utime - lastMsgUtime;
+        u64 logDiff = lastMsgUtime == 0 ? 0 : msg->utime - lastMsgUtime;
         u64 logDiffSpeed = logDiff / this->speed;
-        u64 diff = logDiffSpeed > localDiff ? logDiffSpeed - localDiff : 0;
 
-        if (diff > 0)
+        u64 now = TimeUtil::utime();
+        u64 localDiff = lastDispatchUtime == 0 ? 0 : now - lastDispatchUtime;
+
+        u64 diff = logDiffSpeed > localDiff ? logDiffSpeed - localDiff : 0;
+        if (diff)
             usleep(diff);
 
-        lastDispatchUtime = TimeUtil::utime();
+        lastDispatchUtime = TimeUtil::utime() + 3;
         lastMsgUtime = msg->utime;
 
         return ZCM_EOK;
