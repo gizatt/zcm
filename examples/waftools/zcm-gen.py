@@ -114,9 +114,14 @@ def outFileName(ctx, inp, lang, absPath=False):
         cfileparts = fileparts[:]
         hfileparts[2] = fileparts[2].replace('.zcm', '.h')
         cfileparts[2] = fileparts[2].replace('.zcm', '.c')
+
         if fileparts[1] != "":
             hfileparts[2] = fileparts[1] + "_" + hfileparts[2]
             cfileparts[2] = fileparts[1] + "_" + cfileparts[2]
+
+        hfileparts[1] = "" # For LCM compat, force c files to build with
+        cfileparts[1] = "" # library as part of filename and not path
+
         return [defaultOutFileName(hfileparts, absPath).replace('.zcm', '.h'),
                 defaultOutFileName(cfileparts, absPath).replace('.zcm', '.c')]
     if lang == 'cpp':
