@@ -5,7 +5,7 @@
 #include <string.h>
 
 /* TODO remove malloc for preallocated mem and linked-lists */
-#define ZCM_NONBLOCK_SUBS_MAX 16
+#define ZCM_NONBLOCK_SUBS_MAX 64
 
 struct zcm_nonblocking
 {
